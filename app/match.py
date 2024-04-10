@@ -83,10 +83,10 @@ class Dismissal:
 
 @dataclass
 class Delivery(DataClassJsonMixin):
-    batter: str
-    bowler: str
-    non_striker: str
-    runs: Runs
+    batter: str = ""
+    bowler: str = ""
+    non_striker: str = ""
+    runs: Runs = field(default_factory=Runs)
     extras: Extras = field(default_factory=Extras)
     wickets: list[Dismissal] = field(default_factory=list)
 
@@ -97,6 +97,10 @@ class Over:
     over: int
     deliveries: list[Delivery] = field(default_factory=list)
 
+    @property
+    def runs(self) -> int:
+        return sum(deliv.runs.total for deliv in self.deliveries)
+
 
 @dataclass_json
 @dataclass
@@ -104,6 +108,18 @@ class PowerPlay:
     type: str
     ball_from: float = field(metadata=config(field_name="from"))
     ball_to: float = field(metadata=config(field_name="to"))
+
+    @property
+    def first_over(self) -> int:
+        return int(self.ball_from)
+
+    @property
+    def last_over(self) -> int:
+        return int(self.ball_to)
+
+    @property
+    def overs(self) -> range:
+        return range(self.first_over, self.last_over + 1)
 
 
 @dataclass_json
