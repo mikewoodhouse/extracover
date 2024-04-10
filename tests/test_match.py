@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from app.match import Match
+from app.match import Delivery, Match, PowerPlay
 
 
 @pytest.fixture
@@ -42,3 +42,70 @@ def test_match_from_json_info(m):
         nm in i.registry.people for nm in i.players["Japan"] + i.players["Singapore"]
     )
     assert i.venue == "Terdthai Cricket Ground, Bangkok"
+
+
+def test_match_from_json_innings(m):
+    i = m.innings
+    assert len(i) == 2
+    assert i[0].team == "Japan"
+    assert i[1].team == "Singapore"
+    inn_0 = i[0]
+    assert len(inn_0.overs) == 20
+    d = inn_0.overs[0].deliveries[0]
+    assert d.extras.noballs == 1
+    assert all(isinstance(inns.powerplays, list) for inns in i)
+    assert all(isinstance(pp, PowerPlay) for inns in i for pp in inns.powerplays)
+    assert i[0].target.overs == 0
+    assert i[1].target.overs == 20
+
+
+def test_match_from_json_no_wicket(m):
+    i = m.innings
+    inns = i[0]
+    wkt_ball = inns.overs[0].deliveries[1]
+    assert len(wkt_ball.wickets) == 0
+
+
+def test_match_from_json_wicket_fell(m):
+    i = m.innings
+    inns = i[0]
+    wkt_ball = inns.overs[0].deliveries[2]
+    assert len(wkt_ball.wickets) == 1
+    wkt = wkt_ball.wickets[0]
+    assert wkt.player_out == "L Yamamoto-Lake"
+    assert wkt.kind == "caught"
+
+
+def test_delivery_import_with_no_extras():
+    d = """{
+              "batter": "K Kadowaki-Fleming",
+              "bowler": "R Kalimuthu",
+              "non_striker": "L Yamamoto-Lake",
+              "runs": {
+                "batter": 1,
+                "extras": 0,
+                "total": 1
+              }
+            }"""
+    deliv = Delivery.from_json(d)
+    assert deliv.runs.total == 1
+    assert deliv.extras.noballs == 0
+
+
+def test_delivery_import_with_extras():
+    d = """{
+              "batter": "K Kadowaki-Fleming",
+              "bowler": "R Kalimuthu",
+              "extras": {
+                "noballs": 1
+              },
+              "non_striker": "L Yamamoto-Lake",
+              "runs": {
+                "batter": 1,
+                "extras": 1,
+                "total": 2
+              }
+            }"""
+    deliv = Delivery.from_json(d)
+    assert deliv.runs.total == 2
+    assert deliv.extras.noballs == 1

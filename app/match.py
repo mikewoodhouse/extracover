@@ -57,7 +57,73 @@ class Info:
     teams: list[str] = field(default_factory=list)
 
 
+@dataclass_json
+@dataclass
+class Extras:
+    noballs: int = 0
+    wides: int = 0
+    legbyes: int = 0
+    byes: int = 0
+
+
+@dataclass_json
+@dataclass
+class Runs:
+    batter: int = 0
+    extras: int = 0
+    total: int = 0
+
+
+@dataclass_json
+@dataclass
+class Dismissal:
+    player_out: str
+    kind: str
+
+
+@dataclass
+class Delivery(DataClassJsonMixin):
+    batter: str
+    bowler: str
+    non_striker: str
+    runs: Runs
+    extras: Extras = field(default_factory=Extras)
+    wickets: list[Dismissal] = field(default_factory=list)
+
+
+@dataclass_json
+@dataclass
+class Over:
+    over: int
+    deliveries: list[Delivery] = field(default_factory=list)
+
+
+@dataclass_json
+@dataclass
+class PowerPlay:
+    type: str
+    ball_from: float = field(metadata=config(field_name="from"))
+    ball_to: float = field(metadata=config(field_name="to"))
+
+
+@dataclass_json
+@dataclass
+class Target:
+    overs: int = 0
+    runs: int = 0
+
+
+@dataclass_json
+@dataclass
+class Innings:
+    team: str
+    overs: list[Over] = field(default_factory=list)
+    powerplays: list[PowerPlay] = field(default_factory=list)
+    target: Target = field(default_factory=Target)
+
+
 @dataclass
 class Match(DataClassJsonMixin):
     meta: Meta
     info: Info
+    innings: list[Innings] = field(default_factory=list)
