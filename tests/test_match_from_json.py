@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from app.match import Delivery, Match, PowerPlay
+from app.ingest.classes import Delivery, Match, PowerPlay
 
 
 @pytest.fixture

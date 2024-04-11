@@ -1,6 +1,6 @@
 import random
 
-from app.match import Delivery, Over, Runs
+from app.ingest.classes import Delivery, Over, Runs
 
 
 def test_total_runs():

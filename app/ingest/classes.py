@@ -1,3 +1,7 @@
+"""
+class definitions for importing JSON match files
+"""
+
 from dataclasses import dataclass, field
 from datetime import date
 
@@ -23,8 +27,8 @@ class Meta:
 @dataclass_json
 @dataclass
 class Event:
-    name: str
-    stage: str
+    name: str = ""
+    stage: str = ""
 
 
 @dataclass_json
@@ -44,8 +48,6 @@ class Registry:
 @dataclass
 class Info:
     balls_per_over: int
-    city: str
-    event: Event
     toss: Toss
     gender: str
     match_type: str
@@ -53,8 +55,10 @@ class Info:
     venue: str
     dates: list[date] = field(metadata=config(decoder=date_list_decoder))
     registry: Registry
+    event: Event = field(default_factory=Event)
     players: dict[str, list[str]] = field(default_factory=dict)
     teams: list[str] = field(default_factory=list)
+    city: str = ""
 
 
 @dataclass_json

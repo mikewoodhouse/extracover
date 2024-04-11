@@ -1,4 +1,4 @@
-from app.match import PowerPlay
+from app.ingest.classes import PowerPlay
 
 
 def test_powerplay_properties():
