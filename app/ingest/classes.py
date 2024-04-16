@@ -100,6 +100,7 @@ class Delivery(DataClassJsonMixin):
 class Over:
     over: int
     deliveries: list[Delivery] = field(default_factory=list)
+    wickets_down_at_start: int = 0
 
     @property
     def runs(self) -> int:
@@ -133,13 +134,18 @@ class Target:
     runs: int = 0
 
 
-@dataclass_json
 @dataclass
-class Innings:
+class Innings(DataClassJsonMixin):
     team: str
     overs: list[Over] = field(default_factory=list)
     powerplays: list[PowerPlay] = field(default_factory=list)
     target: Target = field(default_factory=Target)
+
+    def __post_init__(self):
+        wkts = 0
+        for over in self.overs:
+            over.wickets_down_at_start = wkts
+            wkts += sum(len(ball.wickets) for ball in over.deliveries)
 
 
 @dataclass
