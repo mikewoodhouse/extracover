@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS
   matches (
-    match_id INTEGER NOT NULL PRIMARY KEY
-  , start_date DATE
+    start_date DATE
   , match_type TEXT
   , gender TEXT
   , venue TEXT
@@ -12,10 +11,7 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE TABLE IF NOT EXISTS
-  teams (
-    team_id INTEGER NOT NULL PRIMARY KEY
-  , name TEXT
-  );
+  teams (name TEXT NOT NULL, UNIQUE (name));
 
 CREATE TABLE IF NOT EXISTS
   participation (

@@ -9,7 +9,10 @@ from dataclasses_json import DataClassJsonMixin, config, dataclass_json
 
 
 def date_field():
-    return field(metadata=config(encoder=date.isoformat, decoder=date.fromisoformat))
+    return field(
+        metadata=config(encoder=date.isoformat, decoder=date.fromisoformat),
+        default=date(1900, 1, 1),
+    )
 
 
 def date_list_decoder(dts: list[str]) -> list[date]:
@@ -19,9 +22,9 @@ def date_list_decoder(dts: list[str]) -> list[date]:
 @dataclass_json
 @dataclass
 class Meta:
-    data_version: str
-    revision: int
     created: date = date_field()
+    data_version: str = "0"
+    revision: int = 0
 
 
 @dataclass_json
@@ -30,12 +33,16 @@ class Event:
     name: str = ""
     stage: str = ""
 
+    @property
+    def as_string(self) -> str:
+        return f"{self.name}|{self.stage}"
+
 
 @dataclass_json
 @dataclass
 class Toss:
-    decision: str
-    winner: str
+    decision: str = ""
+    winner: str = ""
 
 
 @dataclass_json
@@ -47,18 +54,32 @@ class Registry:
 @dataclass_json
 @dataclass
 class Info:
-    balls_per_over: int
-    toss: Toss
-    gender: str
-    match_type: str
-    overs: int
-    venue: str
-    dates: list[date] = field(metadata=config(decoder=date_list_decoder))
-    registry: Registry
+    dates: list[date] = field(
+        metadata=config(decoder=date_list_decoder), default_factory=list
+    )
+    balls_per_over: int = 0
+    gender: str = ""
+    match_type: str = ""
+    overs: int = 0
+    venue: str = ""
+    toss: Toss = field(default_factory=Toss)
+    registry: Registry = field(default_factory=Registry)
     event: Event = field(default_factory=Event)
     players: dict[str, list[str]] = field(default_factory=dict)
     teams: list[str] = field(default_factory=list)
     city: str = ""
+
+    def database_fields(self) -> dict:
+        return {
+            "start_date": self.dates[0].isoformat(),
+            "match_type": self.match_type,
+            "gender": self.gender,
+            "venue": self.venue,
+            "event": self.event.as_string,
+            "city": self.city,
+            "overs": self.overs,
+            "balls_per_over": self.balls_per_over,
+        }
 
 
 @dataclass_json
