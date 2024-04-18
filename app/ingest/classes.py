@@ -81,6 +81,25 @@ class Info:
             "balls_per_over": self.balls_per_over,
         }
 
+    def __repr__(self) -> str:
+        return f"{self.dates[0]}: {self.match_type} {' vs '.join(self.teams)}"
+
+    @property
+    def selected_player_regs(self) -> list[dict[str, str]]:
+        selections = [
+            {
+                "name": player,
+                "reg": self.registry.people[player],
+                "team": team,
+            }
+            for team, team_list in self.players.items()
+            for player in team_list
+        ]
+        assert len(selections) == sum(
+            len(team_list) for team_list in self.players.values()
+        ), "mismatch between player lists and registry"
+        return selections
+
 
 @dataclass_json
 @dataclass

@@ -21,11 +21,7 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE TABLE IF NOT EXISTS
-  players (
-    player_id INTEGER NOT NULL PRIMARY KEY
-  , name TEXT
-  , reg TEXT
-  );
+  players (name TEXT, reg TEXT, UNIQUE (name, reg));
 
 CREATE TABLE IF NOT EXISTS
   selections (

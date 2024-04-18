@@ -21,7 +21,8 @@ class MatchWriter:
         6. insert balls
         """
         self.write_teams(match.info.teams)
-        self.write_match_info(match.info)
+        self.write_match_from_info(match.info)
+        self.write_player_selections(match.info)
 
     def write_teams(self, teams: list[str]) -> None:
         sql = """
@@ -42,7 +43,7 @@ class MatchWriter:
                     assert team_id, f"inserted team id for {team} was null"
             self.team_ids[team] = team_id
 
-    def write_match_info(self, info: Info) -> None:
+    def write_match_from_info(self, info: Info) -> None:
         fields = info.database_fields()
         sql = """
         INSERT INTO matches (
@@ -68,4 +69,34 @@ class MatchWriter:
         """
         with closing(self.db.cursor()) as csr:
             csr.execute(sql, fields)
-            self.match_id = csr.lastrowid
+            match_id = csr.lastrowid
+            assert match_id, f"inserted match id is null: {info}"
+            self.match_id = match_id
+
+    def write_player_selections(self, info: Info) -> None:
+        player_sql = """
+        INSERT OR IGNORE INTO players (name, reg)
+        VALUES (:name, :reg)
+        ON CONFLICT DO NOTHING
+        """
+        selection_sql = """
+        INSERT INTO selections (match_id, team_id, player_id)
+        SELECT
+            :match_id, :team_id, p.rowid
+        FROM players p
+        WHERE p.name = :name
+        AND p.reg = :reg
+        """
+        with closing(self.db.cursor()) as csr:
+            csr.executemany(player_sql, info.selected_player_regs)
+            csr.executemany(
+                selection_sql,
+                [
+                    {
+                        "match_id": self.match_id,
+                        "team_id": self.team_ids[selection["team"]],
+                    }
+                    | selection
+                    for selection in info.selected_player_regs
+                ],
+            )
