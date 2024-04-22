@@ -1,6 +1,6 @@
 import random
 
-from app.ingest.classes import Delivery, Over, Runs
+from app.ingest.classes import Delivery, Extras, Over, Runs
 
 
 def test_total_runs():
@@ -15,3 +15,21 @@ def test_total_runs():
         ],
     )
     assert over.runs == sum(balls)
+
+
+def test_ball_numbering():
+    over = Over(
+        over=3,
+        deliveries=[
+            Delivery(extras=Extras(noballs=1)),
+            Delivery(),
+            Delivery(),
+            Delivery(extras=Extras(wides=1)),
+            Delivery(extras=Extras(byes=1)),
+            Delivery(extras=Extras(legbyes=1)),
+            Delivery(),
+            Delivery(extras=Extras(noballs=1)),
+            Delivery(),
+        ],
+    )
+    assert over

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from app.ingest.classes import Event, Info, Registry, Toss
+from app.ingest.classes import Event, Info, Innings, Registry, Toss
 from app.ingest.match_writer import MatchWriter
 
 
@@ -82,3 +82,21 @@ def test_player_selection_writing(writer: MatchWriter, info: Info):
     writer.write_player_selections(info)
     assert row_count(writer.db, "players") == 4
     assert row_count(writer.db, "selections") == 4
+
+
+def test_innings_writing(writer: MatchWriter):
+    innings = Innings()
+    assert innings
+
+
+#     match_id INTEGER
+#   , innings INTEGER
+#   , over INTEGER
+#   , ball_seq INTEGER /* includes wides/noballs */
+#   , ball INTEGER /* of match.balls_per_over */
+#   , bowled_by INTEGER
+#   , batter INTEGER
+#   , non_striker INTEGER
+#   , batter_runs INTEGER
+#   , extra_runs INTEGER
+#   , extra_type TEXT

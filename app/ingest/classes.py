@@ -2,7 +2,7 @@
 class definitions for importing JSON match files
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from datetime import date
 
 from dataclasses_json import DataClassJsonMixin, config, dataclass_json
@@ -109,6 +109,16 @@ class Extras:
     legbyes: int = 0
     byes: int = 0
 
+    @property
+    def extra_type(self) -> str:
+        try:
+            res = next(
+                field.name for field in fields(Extras) if self.__dict__[field.name] > 0
+            )
+        except StopIteration:
+            return ""
+        return res[:-1] if res else ""
+
 
 @dataclass_json
 @dataclass
@@ -121,12 +131,20 @@ class Runs:
 @dataclass_json
 @dataclass
 class Dismissal:
-    player_out: str
-    kind: str
+    player_out: str = ""
+    kind: str = ""
+
+    def to_database_dismissal(self) -> dict:
+        return {
+            "dismissed": self.player_out,
+            "how_out": self.kind,
+        }
 
 
 @dataclass
 class Delivery(DataClassJsonMixin):
+    ball_seq: int = 0
+    legal_ball_seq: int = 0
     batter: str = ""
     bowler: str = ""
     non_striker: str = ""
@@ -134,13 +152,47 @@ class Delivery(DataClassJsonMixin):
     extras: Extras = field(default_factory=Extras)
     wickets: list[Dismissal] = field(default_factory=list)
 
+    @property
+    def is_bowler_extra(self) -> bool:
+        return self.extras.extra_type in ["wide", "noball"]
+
+    def to_database_ball(self) -> dict:
+        return {
+            "ball_seq": self.ball_seq,
+            "ball": self.legal_ball_seq,
+            "batter": self.batter,
+            "bowled_by": self.bowler,
+            "non_striker": self.non_striker,
+            "batter_runs": self.runs.batter,
+            "extra_runs": self.runs.extras,
+            "extra_type": self.extras.extra_type,
+            "wicket_fell": bool(self.wickets),
+        } | (
+            self.wickets[0].to_database_dismissal()
+            if self.wickets
+            else {
+                "dismissed": "",
+                "how_out": "",
+            }
+        )
+
 
 @dataclass_json
 @dataclass
 class Over:
     over: int
-    deliveries: list[Delivery] = field(default_factory=list)
+    deliveries: list[Delivery] = field(
+        default_factory=list, metadata=config(field_name="deliveries")
+    )
     wickets_down_at_start: int = 0
+
+    def __post_init__(self) -> None:
+        legal_ball_seq = 0
+        for ball_seq, deliv in enumerate(self.deliveries):
+            deliv.ball_seq = ball_seq
+            deliv.legal_ball_seq = legal_ball_seq
+            if not deliv.is_bowler_extra:
+                legal_ball_seq += 1
 
     @property
     def runs(self) -> int:
@@ -176,7 +228,7 @@ class Target:
 
 @dataclass
 class Innings(DataClassJsonMixin):
-    team: str
+    team: str = ""
     overs: list[Over] = field(default_factory=list)
     powerplays: list[PowerPlay] = field(default_factory=list)
     target: Target = field(default_factory=Target)
@@ -186,6 +238,16 @@ class Innings(DataClassJsonMixin):
         for over in self.overs:
             over.wickets_down_at_start = wkts
             wkts += sum(len(ball.wickets) for ball in over.deliveries)
+
+    def database_balls(self) -> list[dict]:
+        return [
+            {
+                "over": over.over,
+            }
+            | deliv.to_database_ball()
+            for over in self.overs
+            for deliv in over.deliveries
+        ]
 
 
 @dataclass

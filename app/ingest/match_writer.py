@@ -1,7 +1,7 @@
 import sqlite3
 from contextlib import closing
 
-from app.ingest.classes import Info, Match
+from app.ingest.classes import Info, Innings, Match
 
 
 class MatchWriter:
@@ -23,6 +23,8 @@ class MatchWriter:
         self.write_teams(match.info.teams)
         self.write_match_from_info(match.info)
         self.write_player_selections(match.info)
+        for innings_index, innings in enumerate(match.innings):
+            self.write_innings(innings_index, innings)
 
     def write_teams(self, teams: list[str]) -> None:
         sql = """
@@ -99,4 +101,49 @@ class MatchWriter:
                     | selection
                     for selection in info.selected_player_regs
                 ],
+            )
+
+    def write_innings(self, index: int, innings: Innings) -> None:
+        sql = """
+        INSERT INTO balls (
+          match_id
+        , innings
+        , over
+        , ball_seq
+        , ball
+        , bowled_by
+        , batter
+        , non_striker
+        , batter_runs
+        , extra_runs
+        , extra_type
+        , wicket_fell
+        , dismissed
+        , how_out
+        )
+        VALUES (
+          :match_id
+        , :innings
+        , :over
+        , :ball_seq
+        , :ball
+        , :bowled_by
+        , :batter
+        , :non_striker
+        , :batter_runs
+        , :extra_runs
+        , :extra_type
+        , :wicket_fell
+        , :dismissed
+        , :how_out
+        )
+        """
+        match_key_info = {
+            "match_id": self.match_id,
+            "innings": index,
+        }
+        with closing(self.db.cursor()) as csr:
+            csr.executemany(
+                sql,
+                [ball_dict | match_key_info for ball_dict in innings.database_balls()],
             )

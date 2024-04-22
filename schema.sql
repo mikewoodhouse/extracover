@@ -43,4 +43,7 @@ CREATE TABLE IF NOT EXISTS
   , batter_runs INTEGER
   , extra_runs INTEGER
   , extra_type TEXT
+  , wicket_fell BOOLEAN NOT NULL CHECK (wicket_fell IN (0, 1)) DEFAULT 0
+  , dismissed INTEGER
+  , how_out TEXT
   );
