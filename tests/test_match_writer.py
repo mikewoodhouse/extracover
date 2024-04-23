@@ -8,6 +8,7 @@ import pytest
 
 from app.ingest.classes import Event, Info, Innings, Registry, Toss
 from app.ingest.match_writer import MatchWriter
+from app.utils import row_count
 
 
 @pytest.fixture
@@ -36,12 +37,6 @@ def info() -> Info:
         city="",
         event=Event(name="cup", stage="first"),
     )
-
-
-def row_count(db: sqlite3.Connection, table: str) -> int:
-    with closing(db.cursor()) as csr:
-        row = csr.execute(f"SELECT Count(*) AS row_count FROM {table}").fetchone()
-        return row["row_count"]
 
 
 def test_team_writing(writer: MatchWriter):  # sourcery skip: extract-duplicate-method
@@ -84,19 +79,7 @@ def test_player_selection_writing(writer: MatchWriter, info: Info):
     assert row_count(writer.db, "selections") == 4
 
 
-def test_innings_writing(writer: MatchWriter):
-    innings = Innings()
-    assert innings
-
-
-#     match_id INTEGER
-#   , innings INTEGER
-#   , over INTEGER
-#   , ball_seq INTEGER /* includes wides/noballs */
-#   , ball INTEGER /* of match.balls_per_over */
-#   , bowled_by INTEGER
-#   , batter INTEGER
-#   , non_striker INTEGER
-#   , batter_runs INTEGER
-#   , extra_runs INTEGER
-#   , extra_type TEXT
+@pytest.mark.usefixtures("innings")
+def test_innings_writing(innings: Innings, writer: MatchWriter):
+    writer.write_innings_deliveries(0, innings)
+    assert row_count(writer.db, "balls") == 2

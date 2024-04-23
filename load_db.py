@@ -4,11 +4,14 @@ import sys
 from contextlib import closing
 from pathlib import Path
 
-from app.ingest.classes import Match
 from app.ingest.match_writer import MatchWriter
 from app.notebook_utils import t20_matches
+from app.utils import StopWatch, row_count
 
-db = sqlite3.connect("male_t20.sqlite")
+GENDER = "female"
+MATCH_TYPE = "T20"
+
+db = sqlite3.connect(f"{GENDER}_{MATCH_TYPE}.sqlite")
 
 
 FORMAT = "%(asctime)s %(message)s"
@@ -37,13 +40,14 @@ with closing(db.cursor()) as csr:
     csr.executescript(Path("schema.sql").read_text())
     logging.info("created tables")
 
-logging.info("loading matches...")
-matches: list[Match] = [m for m in t20_matches("female", "IT20")]
-logging.info(f"... {len(matches)} matches loaded")
-
 writer = MatchWriter(db)
 
-writer.write(matches[0])
+with StopWatch("match_loading", 2) as timer:
+    for done, match in enumerate(t20_matches(GENDER, MATCH_TYPE), start=1):
+        writer.write(match)
+        if done % 200 == 0:
+            timer.report_split(f"{done=}")
 
-for row in db.execute("select * from teams").fetchall():
-    print(row)
+
+for table in ["teams", "matches", "balls", "players", "selections"]:
+    print(f"{table}:", row_count(writer.db, table))
