@@ -8,7 +8,7 @@ from app.ingest.match_writer import MatchWriter
 from app.notebook_utils import t20_matches
 from app.utils import StopWatch, row_count
 
-GENDER = "female"
+GENDER = "male"
 MATCH_TYPE = "T20"
 
 db = sqlite3.connect(f"{GENDER}_{MATCH_TYPE}.sqlite")
@@ -40,14 +40,13 @@ with closing(db.cursor()) as csr:
     csr.executescript(Path("schema.sql").read_text())
     logging.info("created tables")
 
-writer = MatchWriter(db)
 
 with StopWatch("match_loading", 2) as timer:
     for done, match in enumerate(t20_matches(GENDER, MATCH_TYPE), start=1):
-        writer.write(match)
+        MatchWriter(db).write(match)
         if done % 200 == 0:
             timer.report_split(f"{done=}")
 
 
-for table in ["teams", "matches", "balls", "players", "selections"]:
-    print(f"{table}:", row_count(writer.db, table))
+for table in ["matches", "teams", "participation", "balls", "players", "selections"]:
+    print(f"{table}:", row_count(db, table))

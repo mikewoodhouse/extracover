@@ -22,6 +22,7 @@ class MatchWriter:
         """
         self.write_teams(match.info.teams)
         self.write_match_from_info(match.info)
+        self.write_participating_teams(match.innings)
         self.write_player_selections(match.info)
         for innings_index, innings in enumerate(match.innings):
             self.write_innings_deliveries(innings_index, innings)
@@ -75,6 +76,24 @@ class MatchWriter:
             match_id = csr.lastrowid
             assert match_id, f"inserted match id is null: {info}"
             self.match_id = match_id
+
+    def write_participating_teams(self, innings: list[Innings]) -> None:
+        bat_first = innings[0].team
+        with closing(self.db.cursor()) as csr:
+            for team_name, team_id in self.team_ids.items():
+                innings_index = 0 if team_name == bat_first else 1
+                csr.execute(
+                    """
+                    INSERT INTO participation (match_id,team_id,innings)
+                    VALUES
+                    (:match_id, :team_id, :innings)
+                """,
+                    {
+                        "match_id": self.match_id,
+                        "team_id": team_id,
+                        "innings": innings_index,
+                    },
+                )
 
     def write_player_selections(self, info: Info) -> None:
         player_sql = """
