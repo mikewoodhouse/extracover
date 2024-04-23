@@ -24,7 +24,8 @@ class MatchWriter:
         self.write_match_from_info(match.info)
         self.write_player_selections(match.info)
         for innings_index, innings in enumerate(match.innings):
-            self.write_innings(innings_index, innings)
+            self.write_innings_deliveries(innings_index, innings)
+        self.db.commit()
 
     def write_teams(self, teams: list[str]) -> None:
         sql = """
@@ -103,7 +104,7 @@ class MatchWriter:
                 ],
             )
 
-    def write_innings(self, index: int, innings: Innings) -> None:
+    def write_innings_deliveries(self, index: int, innings: Innings) -> None:
         sql = """
         INSERT INTO balls (
           match_id
