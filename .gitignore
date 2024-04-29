@@ -8,3 +8,6 @@ matches
 venv
 .coverage
 .pytest_cache
+*.csv
+*.sqlite-journal
+*.csv:Zone.Identifier

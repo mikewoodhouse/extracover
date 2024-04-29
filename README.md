@@ -9,3 +9,15 @@ To investigate the evolution of cricket innings in (initially) T20 matches and t
 ## Data
 
 https://cricsheet.org/
+https://cricsheet.org/register/people.csv
+https://cricsheet.org/register/names.csv
+
+
+## Data TODOs
+
+* Classify players:
+  * bowl style
+  * handedness
+* Classify events
+  * Domestic
+  * International & "level"
