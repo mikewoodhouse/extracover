@@ -1,6 +1,19 @@
+import logging
 import sqlite3
+import sys
 from contextlib import closing
 from time import perf_counter
+
+
+def setup_logging() -> None:
+    FORMAT = "%(asctime)s %(message)s"
+    logging.basicConfig(
+        level=logging.INFO,
+        format=FORMAT,
+        handlers=[
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
 
 
 def row_count(db: sqlite3.Connection, table: str) -> int:

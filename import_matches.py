@@ -1,27 +1,16 @@
 import logging
 import sqlite3
-import sys
 from contextlib import closing
 from pathlib import Path
 
 from app.ingest.match_writer import MatchWriter
 from app.notebook_utils import t20_matches
-from app.utils import StopWatch, row_count
+from app.utils import StopWatch, row_count, setup_logging
+from config import config
 
-GENDER = "male"
-MATCH_TYPE = "T20"
+db = sqlite3.connect(config.db_filename)
 
-db = sqlite3.connect(f"{GENDER.lower()}_{MATCH_TYPE.lower()}.sqlite")
-
-
-FORMAT = "%(asctime)s %(message)s"
-logging.basicConfig(
-    level=logging.INFO,
-    format=FORMAT,
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-    ],
-)
+setup_logging()
 
 
 with closing(db.cursor()) as csr:
@@ -30,7 +19,9 @@ with closing(db.cursor()) as csr:
 
 
 with StopWatch("match_loading", 2) as timer:
-    for done, match in enumerate(t20_matches(GENDER, MATCH_TYPE), start=1):
+    for done, match in enumerate(
+        t20_matches(config.gender, config.match_type), start=1
+    ):
         MatchWriter(db).write(match)
         if done % 200 == 0:
             timer.report_split(f"{done=}")
