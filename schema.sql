@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS matches;
+
+DROP TABLE IF EXISTS teams;
+
+DROP TABLE IF EXISTS participation;
+
+DROP TABLE IF EXISTS players;
+
+DROP TABLE IF EXISTS selections;
+
+DROP TABLE IF EXISTS balls;
+
 CREATE TABLE IF NOT EXISTS
   matches (
     start_date DATE
@@ -21,7 +33,18 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE TABLE IF NOT EXISTS
-  players (name TEXT, reg TEXT, UNIQUE (name, reg));
+  players (
+    name TEXT NOT NULL
+  , reg TEXT NOT NULL
+  , cricinfo INTEGER
+  , dob DATE
+  , role TEXT
+  , bat_style TEXT
+  , bowl_style TEXT
+  , UNIQUE (name, reg)
+  );
+
+CREATE INDEX player_reg ON players (reg);
 
 CREATE TABLE IF NOT EXISTS
   selections (
@@ -29,6 +52,10 @@ CREATE TABLE IF NOT EXISTS
   , team_id   INTEGER
   , player_id INTEGER
   );
+
+CREATE INDEX selections_match_id ON selections (match_id);
+
+CREATE INDEX selections_player_id ON selections (player_id);
 
 CREATE TABLE IF NOT EXISTS
   balls (
@@ -47,3 +74,5 @@ CREATE TABLE IF NOT EXISTS
   , dismissed INTEGER
   , how_out TEXT
   );
+
+CREATE INDEX balls_match_id ON balls (match_id);

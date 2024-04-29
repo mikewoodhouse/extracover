@@ -24,18 +24,6 @@ logging.basicConfig(
 )
 
 
-def clear_down_db(target_db: sqlite3.Connection):
-    rows = target_db.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-    ).fetchall()
-    logging.info(f"{len(rows)} tables to drop")
-    for row in rows:
-        table_name = row[0]
-        target_db.execute(f"DROP TABLE IF EXISTS {table_name}")
-
-
-clear_down_db(db)
-
 with closing(db.cursor()) as csr:
     csr.executescript(Path("schema.sql").read_text())
     logging.info("created tables")
