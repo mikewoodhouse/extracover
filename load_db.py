@@ -11,7 +11,7 @@ from app.utils import StopWatch, row_count
 GENDER = "male"
 MATCH_TYPE = "T20"
 
-db = sqlite3.connect(f"{GENDER}_{MATCH_TYPE}.sqlite")
+db = sqlite3.connect(f"{GENDER.lower()}_{MATCH_TYPE.lower()}.sqlite")
 
 
 FORMAT = "%(asctime)s %(message)s"
