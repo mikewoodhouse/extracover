@@ -1,0 +1,3 @@
+[run]
+source = app
+omit = utils.py, __init__.py
