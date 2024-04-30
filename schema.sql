@@ -10,6 +10,8 @@ DROP TABLE IF EXISTS selections;
 
 DROP TABLE IF EXISTS balls;
 
+DROP TABLE IF EXISTS people;
+
 CREATE TABLE IF NOT EXISTS
   matches (
     start_date DATE
@@ -76,3 +78,29 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE INDEX balls_match_id ON balls (match_id);
+
+CREATE TABLE IF NOT EXISTS
+  people (
+    identifier TEXT
+  , name TEXT
+  , unique_name TEXT
+  , key_bcci TEXT
+  , key_bcci_2 TEXT
+  , key_bigbash TEXT
+  , key_cricbuzz TEXT
+  , key_cricheroes TEXT
+  , key_crichq TEXT
+  , key_cricinfo TEXT
+  , key_cricinfo_2 TEXT
+  , key_cricingif TEXT
+  , key_cricketarchive TEXT
+  , key_cricketarchive_2 TEXT
+  , key_nvplay TEXT
+  , key_nvplay_2 TEXT
+  , key_opta TEXT
+  , key_opta_2 TEXT
+  , key_pulse TEXT
+  , key_pulse_2 TEXT
+  );
+
+CREATE INDEX people_reg ON people (identifier);

@@ -4,7 +4,7 @@ class Configurator:
 
     @property
     def db_filename(self) -> str:
-        return f"{self.gender.lower()}_{self.match_type.lower()}.sqlite"
+        return f"{self.gender.lower()}_{self.match_type.lower()}.db"
 
 
 config = Configurator()

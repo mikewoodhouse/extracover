@@ -255,3 +255,27 @@ class Match(DataClassJsonMixin):
     meta: Meta
     info: Info
     innings: list[Innings] = field(default_factory=list)
+
+
+@dataclass
+class Person:
+    identifier: str
+    name: str
+    unique_name: str
+    key_bcci: str = ""
+    key_bcci_2: str = ""
+    key_bigbash: str = ""
+    key_cricbuzz: str = ""
+    key_cricheroes: str = ""
+    key_crichq: str = ""
+    key_cricinfo: str = ""
+    key_cricinfo_2: str = ""
+    key_cricingif: str = ""
+    key_cricketarchive: str = ""
+    key_cricketarchive_2: str = ""
+    key_nvplay: str = ""
+    key_nvplay_2: str = ""
+    key_opta: str = ""
+    key_opta_2: str = ""
+    key_pulse: str = ""
+    key_pulse_2: str = ""
