@@ -67,4 +67,4 @@ if __name__ == "__main__":
     db.row_factory = sqlite3.Row
     setup_logging()
     load_match_data(db)
-    # load_people(db)
+    load_people(db)
