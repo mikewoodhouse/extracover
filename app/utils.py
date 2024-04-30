@@ -2,7 +2,25 @@ import logging
 import sqlite3
 import sys
 from contextlib import closing
+from pathlib import Path
 from time import perf_counter
+from typing import Any, Generator
+
+from app.ingest.classes import Match
+
+
+def t20_dirs(gender: str, match_type: str):
+    for p in Path("matches").glob(f"{gender}/{match_type}"):
+        print(p)
+        yield p
+
+
+def t20_matches(
+    gender: str = "*", match_type: str = "*"
+) -> Generator[Match, Any, Any]:  # list[Match]:
+    for d in t20_dirs(gender, match_type):
+        for p in d.glob("*.json"):
+            yield Match.from_json(p.read_text())
 
 
 def setup_logging() -> None:

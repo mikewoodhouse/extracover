@@ -8,8 +8,7 @@ from dataclass_csv import DataclassReader
 
 from app.ingest.classes import Person
 from app.ingest.match_writer import MatchWriter
-from app.notebook_utils import t20_matches
-from app.utils import StopWatch, row_count, setup_logging
+from app.utils import StopWatch, row_count, setup_logging, t20_matches
 from config import config
 
 
@@ -68,4 +67,4 @@ if __name__ == "__main__":
     db.row_factory = sqlite3.Row
     setup_logging()
     load_match_data(db)
-    load_people(db)
+    # load_people(db)
