@@ -10,6 +10,7 @@ class MatchWriter:
         self.db.row_factory = sqlite3.Row
         self.team_ids: dict[str, int] = {}
         self.match_id: int = -1
+        self.player_ids: dict[str, int] = {}
 
     def write(self, match: Match):
         """
@@ -122,6 +123,15 @@ class MatchWriter:
                     for selection in info.selected_player_regs
                 ],
             )
+        player_id_sql = """
+        SELECT p.name, p.rowid
+        FROM players p
+        JOIN selections s ON s.match_id = :match_id AND s.player_id = p.rowid
+        """
+        with closing(self.db.cursor()) as csr:
+            csr.execute(player_id_sql, {"match_id": self.match_id})
+            self.player_ids = {row["name"]: row["rowid"] for row in csr.fetchall()}
+        print(self.player_ids)
 
     def write_innings_deliveries(self, index: int, innings: Innings) -> None:
         sql = """
@@ -141,22 +151,28 @@ class MatchWriter:
         , dismissed
         , how_out
         )
-        VALUES (
+        SELECT
           :match_id
         , :innings
         , :over
         , :ball_seq
         , :ball
-        , :bowled_by
-        , :batter
-        , :non_striker
+        , pbowl.rowid
+        , pbat.rowid
+        , pnons.rowid
         , :batter_runs
         , :extra_runs
         , :extra_type
         , :wicket_fell
         , :dismissed
         , :how_out
-        )
+        FROM selections sbowl
+        JOIN selections sbat ON sbat.match_id = sbowl.match_id
+        JOIN selections snons ON snons.match_id = sbowl.match_id
+        JOIN players pbowl ON pbowl.rowid = sbowl.player_id AND pbowl.name = :bowled_by
+        JOIN players pbat ON pbat.rowid = sbat.player_id AND pbat.name = :batter
+        JOIN players pnons ON pnons.rowid = snons.player_id AND pnons.name = :non_striker
+        WHERE sbowl.match_id = :match_id
         """
         match_key_info = {
             "match_id": self.match_id,
