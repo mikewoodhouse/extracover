@@ -131,7 +131,6 @@ class MatchWriter:
         with closing(self.db.cursor()) as csr:
             csr.execute(player_id_sql, {"match_id": self.match_id})
             self.player_ids = {row["name"]: row["rowid"] for row in csr.fetchall()}
-        print(self.player_ids)
 
     def write_innings_deliveries(self, index: int, innings: Innings) -> None:
         sql = """
