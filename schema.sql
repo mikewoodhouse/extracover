@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS
   , city TEXT
   , overs INTEGER /* because the Hundred */
   , balls_per_over INTEGER /* because the Hundred */
+  , file_number INTEGER
   );
 
 CREATE TABLE IF NOT EXISTS
@@ -39,10 +40,12 @@ CREATE TABLE IF NOT EXISTS
     name TEXT NOT NULL
   , reg TEXT NOT NULL
   , cricinfo INTEGER
+  , cricinfo_2 INTEGER
   , dob DATE
   , role TEXT
   , bat_style TEXT
   , bowl_style TEXT
+  , datetime_spidered TEXT
   , UNIQUE (name, reg)
   );
 

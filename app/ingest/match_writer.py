@@ -13,14 +13,6 @@ class MatchWriter:
         self.player_ids: dict[str, int] = {}
 
     def write(self, match: Match):
-        """
-        1. insert teams where not already present - store ids
-        2. insert match - save id from cursor.lastrowid
-        3. record team participating in match
-        4. insert players where not already present
-        5. insert selections - should be able to get player_id using reg
-        6. insert balls
-        """
         self.write_teams(match.info.teams)
         self.write_match_from_info(match.info)
         self.write_participating_teams(match.innings)
@@ -177,8 +169,9 @@ class MatchWriter:
             "match_id": self.match_id,
             "innings": index,
         }
+        insert_list = innings.database_balls()
         with closing(self.db.cursor()) as csr:
             csr.executemany(
                 sql,
-                [ball_dict | match_key_info for ball_dict in innings.database_balls()],
+                [ball_dict | match_key_info for ball_dict in insert_list],
             )

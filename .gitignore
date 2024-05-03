@@ -6,8 +6,10 @@ __pycache__
 *.zip*
 matches
 venv
+data
 .coverage
 .pytest_cache
 *.csv
 *.sqlite-journal
 *.csv:Zone.Identifier
+player_json/*.json

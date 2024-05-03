@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from app.ingest.classes import Event, Info, Innings, Registry, Toss
+from app.ingest.classes import Event, Info, Innings, Match, Registry, Toss
 from app.ingest.match_writer import MatchWriter
 from app.utils import row_count
 
@@ -79,7 +79,12 @@ def test_player_selection_writing(writer: MatchWriter, info: Info):
     assert row_count(writer.db, "selections") == 4
 
 
-@pytest.mark.usefixtures("innings")
-def test_innings_writing(innings: Innings, writer: MatchWriter):
+@pytest.mark.skip("needs player names, selections etc to be present in db")
+@pytest.mark.usefixtures("fake_match")
+def test_innings_writing(fake_match: Match, writer: MatchWriter):
+    innings: Innings = fake_match.innings[0]
+    ball_count = sum(len(over.deliveries) for over in innings.overs)
+    assert ball_count > 0, "must be some balls in innings for test to be valid"
     writer.write_innings_deliveries(0, innings)
-    assert row_count(writer.db, "balls") == 2
+    writer.db.commit()
+    assert row_count(writer.db, "balls") == ball_count

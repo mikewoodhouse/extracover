@@ -2,6 +2,7 @@ import logging
 import sqlite3
 import sys
 from contextlib import closing
+from datetime import datetime
 from pathlib import Path
 from time import perf_counter
 from typing import Any, Generator
@@ -51,10 +52,11 @@ class StopWatch:
     def __enter__(self):
         self.start_time = perf_counter()
         self.last_split = self.start_time
+        print(f"{datetime.now()} {self.msg} entered")
         return self
 
     def __exit__(self, type, value, traceback):
-        print(f"{self.elapsed:.{self.decimals}f} {self.msg}")
+        print(f"{datetime.now()} {self.elapsed:.{self.decimals}f} {self.msg} exited")
 
     @property
     def elapsed(self) -> float:
@@ -64,4 +66,6 @@ class StopWatch:
         time_now = perf_counter()
         split_time = time_now - self.last_split
         self.last_split = time_now
-        print(f"{split_time:.{self.decimals}f} {self.elapsed:.{self.decimals}f} {msg}")
+        print(
+            f"{datetime.now()} {split_time:.{self.decimals}f} {self.elapsed:.{self.decimals}f} {msg}"
+        )
