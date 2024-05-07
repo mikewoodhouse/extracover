@@ -13,3 +13,4 @@ data
 *.sqlite-journal
 *.csv:Zone.Identifier
 player_json/*.json
+*.db-journal
