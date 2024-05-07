@@ -1,4 +1,4 @@
-from contextlib import nullcontext as does_not_raise
+# from contextlib import nullcontext as does_not_raise
 
 import pytest
 
@@ -10,21 +10,33 @@ from app.model.bowling_order_generator import (
 
 
 @pytest.fixture
-def bowler_over_freqs() -> list[OverWeightings]:
-    return []
+def bowler_over_freqs() -> list[OverFrequencyRecord]:
+    return [
+        OverFrequencyRecord(name=str(i), over=o, frequency=0.05)
+        for o in range(20)
+        for i in range(5)
+    ]
 
 
-def test_raises_if_less_than_five_bowlers():
+def test_raises_if_less_than_five_bowlers(bowler_over_freqs):
+    four_bowler_version = list(filter(lambda f: f.name != "4", bowler_over_freqs))
     with pytest.raises(ValueError, match="too few"):
-        _ = BowlingOrderGenerator(
-            [
-                OverFrequencyRecord(name=str(i), over=o, frequency=0.05)
-                for o in range(20)
-                for i in range(4)
-            ]
-        )
+        _ = BowlingOrderGenerator(four_bowler_version)
 
 
 def test_raises_if_any_overs_with_no_frequencies():
     with pytest.raises(ValueError, match="for at least"):
         _ = BowlingOrderGenerator([])
+
+
+def test_generates_a_valid_bowling_order(bowler_over_freqs):
+    gen = BowlingOrderGenerator(bowler_over_freqs)
+    order = gen.bowling_order()
+
+    assert len(order) == 20
+
+
+class TestOverWeightings:
+    def test_selection(self):
+        obj = OverWeightings(bowlers={"a": 1, "b": 1})
+        assert obj.selected([]) in ["a", "b"]
