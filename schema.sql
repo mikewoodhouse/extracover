@@ -82,6 +82,8 @@ CREATE TABLE IF NOT EXISTS
 
 CREATE INDEX balls_match_id ON balls (match_id);
 
+CREATE INDEX balls_bowler ON balls (bowled_by);
+
 CREATE TABLE IF NOT EXISTS
   people (
     identifier TEXT
