@@ -39,6 +39,17 @@ class OverRateProfile:
         return len(self.rates)
 
     @classmethod
+    def sql_rows(
+        cls,
+        db: sqlite3.Connection,
+        sql_filename: str,
+        params: dict[str, object] | None = None,
+    ) -> list[sqlite3.Row]:
+        params = params or {}
+        sql = (Path(__file__).parent / f"sql/{sql_filename}.sql").read_text()
+        return db.execute(sql, params).fetchall()
+
+    @classmethod
     def from_rows(cls, rows: list[sqlite3.Row]) -> OverRateProfile:
         prof = OverRateProfile()
         for row in rows:
@@ -47,8 +58,7 @@ class OverRateProfile:
 
     @classmethod
     def by_all(cls, db: sqlite3.Connection) -> OverRateProfile:
-        sql = (Path(__file__).parent / "sql/base_first_inns_over_rates.sql").read_text()
-        rows = db.execute(sql).fetchall()
+        rows = cls.sql_rows(db, "base_first_inns_over_rates")
         prof = cls.from_rows(rows)
         if len(prof) < 20:
             raise ValueError("must be 20 overs!")
@@ -56,8 +66,7 @@ class OverRateProfile:
 
     @classmethod
     def by_player(cls, db: sqlite3.Connection, player_id: int) -> OverRateProfile:
-        sql = (
-            Path(__file__).parent / "sql/player_first_inns_over_rates.sql"
-        ).read_text()
-        rows = db.execute(sql, {"player_id": player_id}).fetchall()
+        rows = cls.sql_rows(
+            db, "player_first_inns_over_rates", {"player_id": player_id}
+        )
         return cls.from_rows(rows)
