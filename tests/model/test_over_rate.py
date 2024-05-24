@@ -66,6 +66,10 @@ def test_all_overs_construction(db):
     assert all(prof[i] > 0 for i in range(20))
 
 
-def test_by_player_construction(db):
-    prof = OverRateProfile.by_player(db, 0)
+def test_by_bowler_construction(db):
+    prof = OverRateProfile.by_bowler(db, 0)
     assert all(prof[i] > 0 for i in range(20))
+
+
+def test_by_batter_construction(db):
+    assert False

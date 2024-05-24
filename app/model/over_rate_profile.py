@@ -65,8 +65,15 @@ class OverRateProfile:
         return prof
 
     @classmethod
-    def by_player(cls, db: sqlite3.Connection, player_id: int) -> OverRateProfile:
+    def by_bowler(cls, db: sqlite3.Connection, player_id: int) -> OverRateProfile:
         rows = cls.sql_rows(
-            db, "player_first_inns_over_rates", {"player_id": player_id}
+            db, "bowler_first_inns_over_rates", {"player_id": player_id}
+        )
+        return cls.from_rows(rows)
+
+    @classmethod
+    def by_batter(cls, db: sqlite3.Connection, player_id: int) -> OverRateProfile:
+        rows = cls.sql_rows(
+            db, "batter_first_inns_over_rates", {"player_id": player_id}
         )
         return cls.from_rows(rows)

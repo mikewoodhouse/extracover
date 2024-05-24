@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS
   , how_out TEXT
   );
 
-CREATE INDEX balls_match_id ON balls (match_id);
+CREATE INDEX balls_match_inns_over ON balls (match_id, innings, over);
 
 CREATE INDEX balls_bowler ON balls (bowled_by);
 
