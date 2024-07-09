@@ -109,3 +109,34 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE INDEX people_reg ON people (identifier);
+
+/*
+all_balls:
+1. build a unique sequential key across the innings (rowid might work but can't 100%
+be certain of order)
+2. Sum wickets that fell prior to each ball (sexy PARTITION BY)
+ */
+DROP VIEW IF EXISTS all_balls;
+
+CREATE VIEW
+  all_balls AS
+WITH
+  sequenced_balls AS (
+    SELECT
+      over * 100 + ball_seq AS seq
+    , *
+    FROM
+      balls
+  )
+SELECT
+  *
+, SUM(wicket_fell) OVER (
+    PARTITION BY
+      match_id
+    , innings
+    ORDER BY
+      seq ROWS BETWEEN UNBOUNDED PRECEDING
+      AND CURRENT ROW
+  ) - wicket_fell AS wickets_so_far
+FROM
+  sequenced_balls;
