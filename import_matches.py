@@ -38,7 +38,7 @@ def load_match_data(db: sqlite3.Connection):
 
 
 def load_people(db: sqlite3.Connection):
-    path = Path("people.csv")
+    path = Path("data/people.csv")
     with path.open() as f:
         reader = DataclassReader(f, Person)
         persons = list(reader)
@@ -66,5 +66,5 @@ if __name__ == "__main__":
     db = sqlite3.connect(config.db_filename)
     db.row_factory = sqlite3.Row
     setup_logging()
-    load_match_data(db)
+    # load_match_data(db)
     load_people(db)
