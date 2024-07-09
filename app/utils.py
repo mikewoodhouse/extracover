@@ -46,7 +46,7 @@ class StopWatch:
         self.msg = msg
         self.elapsed_time = 0
         self.start_time = 0
-        self.last_split = 0
+        self.last_split = 0.0
         self.decimals = decimals
 
     def __enter__(self):
