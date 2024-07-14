@@ -156,10 +156,6 @@ class Delivery(DataClassJsonMixin):
     def is_bowler_extra(self) -> bool:
         return self.extras.extra_type in ["wide", "noball"]
 
-    @property
-    def wickets_fell(self) -> int:
-        return len(self.wickets)
-
     def to_database_ball(self) -> dict:
         return {
             "ball_seq": self.ball_seq,
@@ -235,13 +231,6 @@ class Innings(DataClassJsonMixin):
     overs: list[Over] = field(default_factory=list)
     powerplays: list[PowerPlay] = field(default_factory=list)
     target: Target = field(default_factory=Target)
-
-    def __post_init__(self):
-        wkts = 0
-        for over in self.overs:
-            for ball in over.deliveries:
-                ball.wickets_down = wkts
-                wkts += ball.wickets_fell
 
     def database_balls(self) -> list[dict]:
         return [
