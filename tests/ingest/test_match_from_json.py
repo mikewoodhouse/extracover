@@ -76,13 +76,6 @@ def test_match_from_json_wicket_fell(m):
     assert wkt.kind == "caught"
 
 
-def test_wickets_at_start_of_over(m):
-    inns = m.innings[0]
-    assert inns.overs[0].wickets_down_at_start == 0
-    assert inns.overs[1].wickets_down_at_start == 1
-    assert inns.overs[13].wickets_down_at_start == 2
-
-
 def test_delivery_import_with_no_extras():
     d = """{
               "batter": "K Kadowaki-Fleming",

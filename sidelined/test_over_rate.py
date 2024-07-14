@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from app.model.over_rate_profile import OverRateProfile
+from sidelined.over_rate_profile import OverRateProfile
 
 
 @pytest.fixture

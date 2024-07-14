@@ -188,7 +188,6 @@ class Over:
     deliveries: list[Delivery] = field(
         default_factory=list, metadata=config(field_name="deliveries")
     )
-    wickets_down_at_start: int = 0
 
     def __post_init__(self) -> None:
         legal_ball_seq = 0
