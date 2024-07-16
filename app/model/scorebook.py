@@ -33,31 +33,14 @@ class Player:
 
 
 @dataclass
-class Team:
-    batting_order: list[Player] = field(default_factory=list)
-    bowling_order: list[Player] = field(default_factory=list)
-
-
-def int_list(size: int) -> list[int]:
-    return [0] * size
+class InningsCard:
+    batters: list[Player] = field(default_factory=list)
+    bowlers: list[Player] = field(default_factory=list)
+    total: int = 0
+    wickets: int = 0
 
 
 @dataclass
 class Scorebook:
-    teams: list[Team] = field(default_factory=list)
-    totals: list[int] = field(default_factory=list)
-    batting_team: int = 0
-    balls_bowled: int = 0
-
-    def __post_init__(self) -> None:
-        self.totals = int_list(2)
-
-    def record_ball(self, ball: Ball) -> None:
-        self.totals[self.batting_team] += ball.runs_scored
-        if not ball.is_wide_no_ball:
-            self.balls_bowled += 1
-        if self.balls_bowled >= 120:
-            self.close_first_innings()
-
-    def close_first_innings(self) -> None:
-        self.batting_team = 1
+    first_innings: InningsCard = field(default_factory=InningsCard)
+    second_innings: InningsCard = field(default_factory=InningsCard)
