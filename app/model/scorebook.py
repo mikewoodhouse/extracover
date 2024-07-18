@@ -16,8 +16,8 @@ class Ball:
         return self.wide or self.noball or self.bye
 
     @property
-    def is_wide_no_ball(self) -> bool:
-        return self.wide or self.noball
+    def counts_toward_over(self) -> bool:
+        return not (self.wide or self.noball)
 
     @property
     def runs_scored(self) -> int:
@@ -38,9 +38,31 @@ class InningsCard:
     bowlers: list[Player] = field(default_factory=list)
     total: int = 0
     wickets: int = 0
+    balls_bowled: int = 0
+    striker_index: int = 0
+    non_striker_index: int = 1
+
+    @property
+    def closed(self) -> bool:
+        return self.balls_bowled >= 120 or self.wickets >= 10
+
+    @property
+    def striker(self) -> Player:
+        return self.batters[self.striker_index]
 
 
 @dataclass
 class Scorebook:
     first_innings: InningsCard = field(default_factory=InningsCard)
     second_innings: InningsCard = field(default_factory=InningsCard)
+
+    @property
+    def current_innings(self) -> InningsCard:
+        return self.second_innings if self.first_innings.closed else self.first_innings
+
+    def update(self, ball: Ball) -> None:
+        self.current_innings.total += ball.batter_runs + ball.extra_runs
+        if ball.counts_toward_over:
+            self.current_innings.balls_bowled += 1
+        if ball.wicket_fell:
+            self.current_innings.wickets += 1
