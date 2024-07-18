@@ -13,7 +13,10 @@ def fake_innings() -> InningsCard:
 
 @pytest.fixture
 def book() -> Scorebook:
-    return Scorebook(first_innings=fake_innings())
+    return Scorebook(
+        first_innings=fake_innings(),
+        second_innings=fake_innings(),
+    )
 
 
 def test_creation(book: Scorebook):
@@ -74,3 +77,14 @@ def test_batters_update_correctly(
     assert inns.non_striker_index == non_striker
     assert inns.striker.runs_scored == striker_runs
     assert inns.non_striker.runs_scored == non_striker_runs
+
+
+def test_batters_switch_at_end_of_over(book: Scorebook):
+    inns = book.current_innings
+    striker_before = inns.striker_index
+    non_striker_before = inns.non_striker_index
+    inns.balls_bowled = 17
+    ball = Ball()
+    book.update(ball)
+    assert inns.striker_index == non_striker_before
+    assert inns.non_striker_index == striker_before

@@ -79,3 +79,5 @@ class Scorebook:
             self.current_innings.batsmen_change_ends()
         if ball.counts_toward_over:
             self.current_innings.balls_bowled += 1
+            if self.current_innings.balls_bowled % 6 == 0:
+                self.current_innings.batsmen_change_ends()
