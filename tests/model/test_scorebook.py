@@ -3,12 +3,12 @@ import pytest
 from app.model import Ball, InningsCard, Player, Scorebook
 
 
-def fake_player() -> Player:
-    return Player()
+def fake_player(name: str = "") -> Player:
+    return Player(name=name)
 
 
 def fake_innings() -> InningsCard:
-    return InningsCard(batters=[fake_player()] * 11)
+    return InningsCard(batters=[fake_player(name=f"P{str(_)}") for _ in range(11)])
 
 
 @pytest.fixture
@@ -20,6 +20,7 @@ def test_creation(book: Scorebook):
     assert book
     assert book.current_innings.striker_index == 0
     assert book.current_innings.non_striker_index == 1
+    assert len(book.current_innings.batters) == 11
 
 
 @pytest.mark.parametrize(
@@ -58,16 +59,18 @@ def test_closing_first_innings(book: Scorebook, ball: Ball, bowled: int, wickets
 
 
 @pytest.mark.parametrize(
-    "ball,striker,non_striker,striker_runs",
+    "ball,striker,non_striker,striker_runs,non_striker_runs",
     [
-        (Ball(), 0, 1, 0),
+        (Ball(), 0, 1, 0, 0),
+        (Ball(batter_runs=1), 1, 0, 0, 1),
     ],
 )
 def test_batters_update_correctly(
-    book: Scorebook, ball, striker, non_striker, striker_runs
+    book: Scorebook, ball, striker, non_striker, striker_runs, non_striker_runs
 ):
     book.update(ball)
     inns = book.current_innings
     assert inns.striker_index == striker
     assert inns.non_striker_index == non_striker
     assert inns.striker.runs_scored == striker_runs
+    assert inns.non_striker.runs_scored == non_striker_runs

@@ -50,6 +50,16 @@ class InningsCard:
     def striker(self) -> Player:
         return self.batters[self.striker_index]
 
+    @property
+    def non_striker(self) -> Player:
+        return self.batters[self.non_striker_index]
+
+    def batsmen_change_ends(self) -> None:
+        self.striker_index, self.non_striker_index = (
+            self.non_striker_index,
+            self.striker_index,
+        )
+
 
 @dataclass
 class Scorebook:
@@ -62,7 +72,10 @@ class Scorebook:
 
     def update(self, ball: Ball) -> None:
         self.current_innings.total += ball.batter_runs + ball.extra_runs
-        if ball.counts_toward_over:
-            self.current_innings.balls_bowled += 1
+        self.current_innings.striker.runs_scored += ball.batter_runs
         if ball.wicket_fell:
             self.current_innings.wickets += 1
+        if ball.batter_runs in (1, 3):
+            self.current_innings.batsmen_change_ends()
+        if ball.counts_toward_over:
+            self.current_innings.balls_bowled += 1
