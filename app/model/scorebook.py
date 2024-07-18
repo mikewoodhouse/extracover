@@ -60,6 +60,18 @@ class InningsCard:
             self.striker_index,
         )
 
+    def update(self, ball: Ball) -> None:
+        self.total += ball.batter_runs + ball.extra_runs
+        self.striker.runs_scored += ball.batter_runs
+        if ball.wicket_fell:
+            self.wickets += 1
+        if ball.batter_runs in (1, 3):
+            self.batsmen_change_ends()
+        if ball.counts_toward_over:
+            self.balls_bowled += 1
+            if self.balls_bowled % 6 == 0:
+                self.batsmen_change_ends()
+
 
 @dataclass
 class Scorebook:
@@ -71,13 +83,4 @@ class Scorebook:
         return self.second_innings if self.first_innings.closed else self.first_innings
 
     def update(self, ball: Ball) -> None:
-        self.current_innings.total += ball.batter_runs + ball.extra_runs
-        self.current_innings.striker.runs_scored += ball.batter_runs
-        if ball.wicket_fell:
-            self.current_innings.wickets += 1
-        if ball.batter_runs in (1, 3):
-            self.current_innings.batsmen_change_ends()
-        if ball.counts_toward_over:
-            self.current_innings.balls_bowled += 1
-            if self.current_innings.balls_bowled % 6 == 0:
-                self.current_innings.batsmen_change_ends()
+        self.current_innings.update(ball)
