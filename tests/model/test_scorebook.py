@@ -1,22 +1,12 @@
 import pytest
+from fakes import fake_book
 
-from app.model import Ball, InningsCard, Player, Scorebook
-
-
-def fake_player(name: str = "") -> Player:
-    return Player(name=name)
-
-
-def fake_innings() -> InningsCard:
-    return InningsCard(batters=[fake_player(name=f"P{str(_)}") for _ in range(11)])
+from app.model import Ball, Scorebook
 
 
 @pytest.fixture
 def book() -> Scorebook:
-    return Scorebook(
-        first_innings=fake_innings(),
-        second_innings=fake_innings(),
-    )
+    return fake_book()
 
 
 def test_creation(book: Scorebook):
