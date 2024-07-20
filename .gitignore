@@ -14,3 +14,4 @@ data
 *.csv:Zone.Identifier
 player_json/*.json
 *.db-journal
+.mypy_cache
