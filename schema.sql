@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS
   , city TEXT
   , overs INTEGER /* because the Hundred */
   , balls_per_over INTEGER /* because the Hundred */
-  , file_number INTEGER
+  , file_path TEXT
   );
 
 CREATE TABLE IF NOT EXISTS

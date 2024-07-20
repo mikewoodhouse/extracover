@@ -33,6 +33,7 @@ def test_info_database_fields(info):
         "city": "apple",
         "overs": 42,
         "balls_per_over": 5,
+        "file_path": "",
     }
     assert match.info.database_fields() == expected
 

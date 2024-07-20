@@ -21,7 +21,9 @@ def t20_matches(
 ) -> Generator[Match, Any, Any]:  # list[Match]:
     for d in t20_dirs(gender, match_type):
         for p in d.glob("*.json"):
-            yield Match.from_json(p.read_text())
+            match = Match.from_json(p.read_text())
+            match.info.file_path = str(p)
+            yield match
 
 
 def setup_logging() -> None:

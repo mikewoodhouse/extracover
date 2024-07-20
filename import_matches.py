@@ -66,5 +66,5 @@ if __name__ == "__main__":
     db = sqlite3.connect(config.db_filename)
     db.row_factory = sqlite3.Row
     setup_logging()
-    # load_match_data(db)
+    load_match_data(db)
     load_people(db)

@@ -52,6 +52,7 @@ class MatchWriter:
         , city
         , overs
         , balls_per_over
+        , file_path
         )
         VALUES (
           :start_date
@@ -62,6 +63,7 @@ class MatchWriter:
         , :city
         , :overs
         , :balls_per_over
+        , :file_path
         )
         """
         with closing(self.db.cursor()) as csr:

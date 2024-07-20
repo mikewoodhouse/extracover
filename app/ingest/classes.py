@@ -68,6 +68,7 @@ class Info:
     players: dict[str, list[str]] = field(default_factory=dict)
     teams: list[str] = field(default_factory=list)
     city: str = ""
+    file_path: str = ""
 
     def database_fields(self) -> dict:
         return {
@@ -79,6 +80,7 @@ class Info:
             "city": self.city,
             "overs": self.overs,
             "balls_per_over": self.balls_per_over,
+            "file_path": self.file_path,
         }
 
     def __repr__(self) -> str:
