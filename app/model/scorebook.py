@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 
@@ -22,6 +24,34 @@ class Ball:
     @property
     def runs_scored(self) -> int:
         return self.batter_runs + self.extra_runs
+
+    def __str__(self) -> str:
+        extra_type = "wide" if self.wide else ""
+        extra_type = "noball" if self.noball else ""
+        extra_type = "bye" if self.bye else ""
+
+        return (
+            f"{self.batter_runs}+{self.extra_runs}"
+            f"{' *out* ' if self.wicket_fell else ' '}"
+            f"{extra_type}"
+        )
+
+    @classmethod
+    def from_db(cls, row: dict) -> Ball:
+        match row["extra_type"]:
+            case "wide":
+                row["wide"] = True
+            case "noball":
+                row["noball"] = True
+            case "bye":
+                row["bye"] = True
+            case "legbye":
+                row["bye"] = True
+            case _:
+                pass
+        row.pop("extra_type")
+
+        return cls(**row)
 
 
 @dataclass
