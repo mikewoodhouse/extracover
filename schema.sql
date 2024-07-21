@@ -69,9 +69,9 @@ CREATE TABLE IF NOT EXISTS
   , over INTEGER
   , ball_seq INTEGER /* includes wides/noballs */
   , ball INTEGER /* of match.balls_per_over */
-  , bowled_by INTEGER
-  , batter INTEGER
-  , non_striker INTEGER
+  , bowled_by TEXT
+  , batter TEXT
+  , non_striker TEXT
   , batter_runs INTEGER
   , extra_runs INTEGER
   , extra_type TEXT
@@ -123,13 +123,16 @@ CREATE VIEW
 WITH
   sequenced_balls AS (
     SELECT
-      over * 100 + ball_seq AS seq
+      innings * 10000 + over * 100 + ball_seq AS seq
     , *
     FROM
       balls
   )
 SELECT
-  *
+  b.*
+, strikers.name         AS striker_name
+, non_strikers.name     AS non_striker_name
+, bowlers.name          AS bowler_name
 , SUM(wicket_fell) OVER (
     PARTITION BY
       match_id
@@ -139,4 +142,7 @@ SELECT
       AND CURRENT ROW
   ) - wicket_fell AS wickets_so_far
 FROM
-  sequenced_balls;
+  sequenced_balls b
+  JOIN players strikers ON strikers.rowid = b.batter
+  JOIN players non_strikers ON non_strikers.rowid = b.non_striker
+  JOIN players bowlers ON bowlers.rowid = b.bowled_by;
