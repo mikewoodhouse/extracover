@@ -23,7 +23,7 @@ def load_match_data(db: sqlite3.Connection):
             t20_matches(config.gender, config.match_type), start=1
         ):
             MatchWriter(db).write(match)
-            if done % 200 == 0:
+            if done % 500 == 0:
                 timer.report_split(f"{done=}")
 
     for table in [
