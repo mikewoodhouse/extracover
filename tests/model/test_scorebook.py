@@ -1,7 +1,8 @@
 import pytest
-from fakes import fake_book
 
 from app.model import Ball, Scorebook
+
+from .fakes import fake_book
 
 
 @pytest.fixture

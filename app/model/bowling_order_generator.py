@@ -35,10 +35,10 @@ class BowlingOrderGenerator:
 
     def bowling_order(self) -> list[str]:
         def make_an_order() -> list[str]:
-            num_bowled = defaultdict(int)
+            num_bowled: dict[str, int] = defaultdict(int)
             b, last_b = "", ""
             bowling_order = []
-            bowled_out = []
+            bowled_out: list[str] = []
             weights = copy.deepcopy(self.over_weights)
             for ov in weights:
                 b = ov.selected(exclude=[last_b] + bowled_out)

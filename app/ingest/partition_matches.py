@@ -7,7 +7,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-c = defaultdict(int)
+c: dict = defaultdict(int)
 
 
 def check_match_dir(p: Path):
