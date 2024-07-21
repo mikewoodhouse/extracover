@@ -5,6 +5,9 @@ from dataclasses import dataclass, field
 
 @dataclass
 class Ball:
+    striker_name: str = ""
+    non_striker_name: str = ""
+    bowler_name: str = ""
     batter_runs: int = 0
     extra_runs: int = 0
     wicket_fell: bool = False
@@ -31,7 +34,7 @@ class Ball:
         extra_type = "bye" if self.bye else ""
 
         return (
-            f"{self.batter_runs}+{self.extra_runs}"
+            f"{self.striker_name}: {self.batter_runs}+{self.extra_runs}"
             f"{' *out* ' if self.wicket_fell else ' '}"
             f"{extra_type}"
         )
@@ -71,6 +74,7 @@ class InningsCard:
     balls_bowled: int = 0
     striker_index: int = 0
     non_striker_index: int = 1
+    next_man_in: int = 2
 
     @property
     def closed(self) -> bool:
@@ -95,7 +99,11 @@ class InningsCard:
         self.striker.runs_scored += ball.batter_runs
         if ball.wicket_fell:
             self.wickets += 1
+            self.striker_index = self.next_man_in
+            self.next_man_in += 1
         if ball.batter_runs in (1, 3):
+            self.batsmen_change_ends()
+        if ball.extra_runs in (2, 4):
             self.batsmen_change_ends()
         if ball.counts_toward_over:
             self.balls_bowled += 1
