@@ -15,6 +15,7 @@ class Ball:
     wide: bool = False
     noball: bool = False
     bye: bool = False
+    legbye: bool = False
 
     @property
     def is_extra(self) -> bool:
@@ -41,18 +42,9 @@ class Ball:
 
     @classmethod
     def from_db(cls, row: dict) -> Ball:
-        match row["extra_type"]:
-            case "wide":
-                row["wide"] = True
-            case "noball":
-                row["noball"] = True
-            case "bye":
-                row["bye"] = True
-            case "legbye":
-                row["bye"] = True
-            case _:
-                pass
-        row.pop("extra_type")
+        if extra_type := row.pop("extra_type", None):
+            row[extra_type] = True
+        row.pop("seq", None)
 
         return cls(**row)
 

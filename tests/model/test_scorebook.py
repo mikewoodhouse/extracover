@@ -2,7 +2,8 @@ import pytest
 
 from app.model import Ball, Scorebook
 
-from .fakes import fake_book
+# sourcery skip: dont-import-test-modules
+from tests.model.fakes import fake_book
 
 
 @pytest.fixture
