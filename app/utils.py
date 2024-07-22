@@ -11,9 +11,7 @@ from app.ingest.classes import Match
 
 
 def t20_dirs(gender: str, match_type: str):
-    for p in Path("matches").glob(f"{gender}/{match_type}"):
-        print(p)
-        yield p
+    yield from Path("matches").glob(f"{gender}/{match_type}")
 
 
 def t20_matches(
