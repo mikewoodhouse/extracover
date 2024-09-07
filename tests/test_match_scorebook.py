@@ -8,20 +8,55 @@ from .model.fakes import fake_book
 
 # USING match from 1422138.json
 
+# There's an issue with the query plan referencing the all_balls view (~25sec)
+# so use the query itself
+#
+# BALLS_SQL = """
+# SELECT
+#     b.striker_name
+# ,   b.non_striker_name
+# ,   b.bowler_name
+# ,   b.batter_runs
+# ,   b.extra_runs
+# ,   b.wicket_fell
+# ,   b.extra_type
+# ,   b.seq
+# FROM all_balls b
+# JOIN matches m ON b.match_id = m.rowid
+# WHERE m.file_path LIKE '%1422138%'
+# ORDER BY b.seq
+# """
+
 BALLS_SQL = """
+WITH
+  the_match AS (
+	SELECT rowid as match_id
+	FROM matches m
+	WHERE m.file_path LIKE '%1422138%'
+)
+,  sequenced_balls AS (
+    SELECT
+      innings * 10000 + over * 100 + ball_seq AS seq
+    , *
+    FROM
+      balls
+  )
 SELECT
-    b.striker_name
-,   b.non_striker_name
-,   b.bowler_name
-,   b.batter_runs
+    b.batter_runs
 ,   b.extra_runs
 ,   b.wicket_fell
 ,   b.extra_type
 ,   b.seq
-FROM all_balls b
-JOIN matches m ON b.match_id = m.rowid
-WHERE m.file_path LIKE '%1422138%'
-ORDER BY b.seq
+, strikers.name         AS striker_name
+, non_strikers.name     AS non_striker_name
+, bowlers.name          AS bowler_name
+FROM
+  sequenced_balls b
+  JOIN players strikers ON strikers.rowid = b.batter
+  JOIN players non_strikers ON non_strikers.rowid = b.non_striker
+  JOIN players bowlers ON bowlers.rowid = b.bowled_by
+  JOIN the_match m ON m.match_id = b.match_id
+ORDER BY seq;
 """
 
 book = fake_book()
@@ -56,7 +91,7 @@ book.second_innings.batters = [
 
 def update_book(book: Scorebook, rows: list[dict]) -> None:
     for row in rows:
-        ball = Ball.from_db(dict(row))
+        ball = Ball.from_db(row)
         book.update(ball)
 
 
