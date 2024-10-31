@@ -65,7 +65,7 @@ CREATE INDEX selections_player_id ON selections (player_id);
 CREATE TABLE IF NOT EXISTS
   balls (
     match_id INTEGER
-  , innings INTEGER
+  , innings INTEGER /* >1 when super over or similar */
   , over INTEGER
   , ball_seq INTEGER /* includes wides/noballs */
   , ball INTEGER /* of match.balls_per_over */
@@ -140,7 +140,7 @@ SELECT
     ORDER BY
       seq ROWS BETWEEN UNBOUNDED PRECEDING
       AND CURRENT ROW
-  ) - wicket_fell AS wickets_so_far
+  ) - wicket_fell AS wickets_down
 FROM
   sequenced_balls b
   JOIN players strikers ON strikers.rowid = b.batter
