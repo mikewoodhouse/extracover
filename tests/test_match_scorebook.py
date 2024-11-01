@@ -40,6 +40,7 @@ WITH
     , *
     FROM
       balls
+    WHERE innings < 2 /* in case there was a super over */
   )
 SELECT
     b.batter_runs
