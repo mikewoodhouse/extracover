@@ -127,6 +127,8 @@ WITH
     , *
     FROM
       balls
+    WHERE
+      innings < 2
   )
 SELECT
   b.*
