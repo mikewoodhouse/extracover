@@ -1,0 +1,106 @@
+{
+    "dataclass class": {
+        "prefix": "dc",
+        "body": [
+            "@dataclass",
+            "class $0:",
+            "\t..."
+        ],
+        "description": "what it says"
+    },
+    "dataclass_json/dataclass": {
+        "prefix": "dcj",
+        "body": [
+            "@dataclass_json",
+            "@dataclass",
+            "class $0:",
+            "\t..."
+        ],
+        "description": "what it says"
+    },
+    "list field with default factory": {
+        "prefix": "fdl",
+        "body": [
+            "list[$0] = field(default_factory=list)"
+        ]
+    },
+    "dict field with default factory": {
+        "prefix": "fdd",
+        "body": [
+            "dict[$0] = field(default_factory=dict)"
+        ]
+    },
+    "class field with default_factory": {
+        "prefix": "fdf",
+        "body": [
+            "${1:class_name} = field(default_factory=${1:class_name})"
+        ]
+    },
+    "pytest.mark.parametrize": {
+        "prefix": "pmp",
+        "body": [
+            "@pytest.mark.parametrize(\"$0\",",
+            "\t[",
+            "\t\t(,),",
+            "\t]",
+            ")",
+            "def test_$1($0):",
+            "    ..."
+        ]
+    },
+    "pytest.mark.skip": {
+        "prefix": "pms",
+        "body": [
+            "@pytest.mark.skip(\"$0\")"
+        ]
+    },
+    "from __future__ import annotations": {
+        "prefix": "ffa",
+        "body": [
+            "from __future__ import annotations"
+        ]
+    },
+    "import dataclass": {
+        "prefix": "impdc",
+        "body": [
+            "from dataclasses import dataclass"
+        ]
+    },
+    "import dataclass_json": {
+        "prefix": "impdcj",
+        "body": [
+            "from dataclasses_json import dataclass_json"
+        ]
+    },
+    "import relativedelta": {
+        "prefix": "ird",
+        "body": [
+            "from dateutil.relativedelta import relativedelta"
+        ]
+    },
+    "import date": {
+        "prefix": "impd",
+        "body": [
+            "from datetime import date"
+        ]
+    },
+    "import uuid": {
+        "prefix": "impuuid",
+        "body": [
+            "from uuid import UUID"
+        ]
+    },
+    "import uuid4": {
+        "prefix": "impuuid4",
+        "body": [
+            "from uuid import uuid4"
+        ]
+    },
+    "if __main__ == ...": {
+        "prefix": "ifname",
+        "body": [
+            "if __name__ == \"__main__\":",
+            "\t$0"
+        ]
+    }
+}
