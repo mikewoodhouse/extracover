@@ -8,7 +8,7 @@ from app.model.scorebook import Ball
 
 
 @dataclass
-class NotRandom(Random):
+class FakeRandom(Random):
     sequence: list[float] = field(default_factory=list)
     idx: int = 0
 
@@ -19,26 +19,34 @@ class NotRandom(Random):
 
 
 def test_creation():
-    rng = NotRandom()
+    rng = FakeRandom()
     assert Balluator(rng)
 
 
 @pytest.mark.parametrize(
-    "parms,expected,rands,desc",
+    "parms,rands,expected,desc",
     [
-        (BallParams(), Ball(), [1.0], "nothing happens"),
+        (BallParams(), [1.0], Ball(), "nothing happens"),
         (
-            BallParams(p_wicket=0.05),
-            Ball(wicket_fell=True),
+            BallParams(p_noball=0.05),
             [
                 0.01,
             ],
-            "wicket",
+            Ball(noball=True),
+            "nb",
+        ),
+        (
+            BallParams(p_noball=0.05, p_wide=0.10),
+            [
+                0.07,
+            ],
+            Ball(wide=True),
+            "wide",
         ),
     ],
 )
-def test_result(parms, expected, rands, desc):
-    rng = NotRandom()
+def test_result(parms, rands, expected, desc):
+    rng = FakeRandom()
     rng.sequence = rands
     obj = Balluator(rng)
     assert obj.result(parms) == expected, desc

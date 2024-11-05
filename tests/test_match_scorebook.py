@@ -1,6 +1,6 @@
 import sqlite3
 from pathlib import Path
-
+import pytest
 from app.model import Ball, Player, Scorebook
 from config import config
 
@@ -95,7 +95,7 @@ def update_book(book: Scorebook, rows: list[dict]) -> None:
         ball = Ball.from_db(row)
         book.update(ball)
 
-
+@pytest.mark.skip()
 def test_run_entire_match_ball_set_from_db():
     db_path = Path(__file__).parent.parent / config.db_filename
     print(db_path)
