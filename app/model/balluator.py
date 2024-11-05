@@ -23,4 +23,5 @@ class Balluator:
         ball = Ball()
         if self.rnd.random() <= params.p_wicket:
             ball.wicket_fell = True
+
         return ball
