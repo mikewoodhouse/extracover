@@ -21,3 +21,5 @@ https://cricsheet.org/register/names.csv
 * Classify events
   * Domestic
   * International & "level"
+* Rule variations
+  * noballs - when is the deduction one and when two? Is it possible to identify as a match condition or do we need to look into competition? `info.match_type_number`, perhaps? When there are batter runs then the size of the penalty is obvious, it's otherwise that might be a problem...

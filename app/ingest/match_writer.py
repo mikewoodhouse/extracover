@@ -46,6 +46,7 @@ class MatchWriter:
         INSERT INTO matches (
           start_date
         , match_type
+        , match_type_number
         , gender
         , venue
         , event
@@ -57,6 +58,7 @@ class MatchWriter:
         VALUES (
           :start_date
         , :match_type
+        , :match_type_number
         , :gender
         , :venue
         , :event

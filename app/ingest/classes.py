@@ -60,6 +60,7 @@ class Info:
     balls_per_over: int = 0
     gender: str = ""
     match_type: str = ""
+    match_type_number: int = 0
     overs: int = 0
     venue: str = ""
     toss: Toss = field(default_factory=Toss)
@@ -74,6 +75,7 @@ class Info:
         return {
             "start_date": self.dates[0].isoformat(),
             "match_type": self.match_type,
+            "match_type_number": self.match_type_number,
             "gender": self.gender,
             "venue": self.venue,
             "event": self.event.as_string,

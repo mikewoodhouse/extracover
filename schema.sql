@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS
   matches (
     start_date DATE
   , match_type TEXT
+  , match_type_number INTEGER
   , gender TEXT
   , venue TEXT
   , event TEXT
