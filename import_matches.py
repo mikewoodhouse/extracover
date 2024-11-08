@@ -6,10 +6,10 @@ from pathlib import Path
 
 from dataclass_csv import DataclassReader
 
+from app.config import config
 from app.ingest.classes import Person
 from app.ingest.match_writer import MatchWriter
 from app.utils import StopWatch, row_count, setup_logging, t20_matches
-from config import config
 
 
 def load_match_data(db: sqlite3.Connection):

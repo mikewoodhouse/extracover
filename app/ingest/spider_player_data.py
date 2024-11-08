@@ -3,9 +3,14 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
+from app.config import config
 from app.ingest.cricinfo_player import CricinfoPlayer
 from app.utils import StopWatch
-from config import config
+
+DATA_DIR = Path.cwd() / "data"
+
+json_dir = DATA_DIR / "player_json"
+
 
 SQL = """
 SELECT
@@ -41,18 +46,9 @@ with StopWatch("Cricinfo spider", 3) as timer:
             print(f"Exception {e} querying cricinfo for {row}")
             not_done += 1
         if player_info := info_getter.json:
-            out_path = Path(__file__).parent / "player_json" / f"{player_id}.json"
+            out_path = json_dir / f"{player_id}.json"
             with out_path.open("w") as f:
                 json.dump(player_info, f)
-            db.execute(
-                """
-                UPDATE players
-                SET datetime_spidered = datetime(current_timestamp, 'localtime')
-                WHERE rowid = :player_id
-                """,
-                {"player_id": player_id},
-            )
-            db.commit()
             done += 1
             if done % 20 == 0:
                 timer.report_split(f"{done=} {not_done=}")

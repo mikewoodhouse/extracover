@@ -1,8 +1,10 @@
 import sqlite3
 from pathlib import Path
+
 import pytest
+
+from app.config import config
 from app.model import Ball, Player, Scorebook
-from config import config
 
 from .model.fakes import fake_book
 
@@ -94,6 +96,7 @@ def update_book(book: Scorebook, rows: list[dict]) -> None:
     for row in rows:
         ball = Ball.from_db(row)
         book.update(ball)
+
 
 @pytest.mark.skip()
 def test_run_entire_match_ball_set_from_db():
