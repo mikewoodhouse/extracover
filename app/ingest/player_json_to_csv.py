@@ -1,9 +1,11 @@
 import csv
 import json
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
-json_dir = Path(__file__).parent / "player_json"
+DATA_DIR = Path.cwd() / "data"
+
+json_dir = DATA_DIR / "player_json"
 
 fieldnames = [
     "player_id",
@@ -11,6 +13,7 @@ fieldnames = [
     "role",
     "bat_style",
     "bowl_style",
+    "datetime_spidered",
 ]
 
 
@@ -27,7 +30,7 @@ def first_from(ary: list[str]) -> str | None:
     return ary[0] if ary else None
 
 
-def player_info(player_id: str, j: dict) -> dict:
+def player_info(player_id: str, j: dict, mod_time) -> dict:
     p = j["player"]
     return {
         "player_id": int(player_id),
@@ -35,10 +38,11 @@ def player_info(player_id: str, j: dict) -> dict:
         "role": first_from(p.get("playingRoles", [])),
         "bat_style": first_from(p.get("battingStyles", [])),
         "bowl_style": first_from(p.get("bowlingStyles", [])),
+        "datetime_spidered": datetime.fromtimestamp(mod_time),
     }
 
 
-outfile = Path(__file__).parent / "player_info.csv"
+outfile = DATA_DIR / "player_info.csv"
 
 with outfile.open("w") as fout:
     writer = csv.DictWriter(fout, fieldnames)
@@ -47,4 +51,4 @@ with outfile.open("w") as fout:
         player_id = path.stem
         with path.open() as fin:
             player_json = json.load(fin)
-        writer.writerow(player_info(player_id, player_json))
+        writer.writerow(player_info(player_id, player_json, path.stat().st_mtime))
