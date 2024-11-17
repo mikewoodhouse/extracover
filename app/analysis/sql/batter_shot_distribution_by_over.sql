@@ -36,19 +36,22 @@ in_batsmen AS (
 	FROM all_balls
 	JOIN qualifying_batters ON batter_id = batter
 	WHERE LENGTH(extra_type) = 0
+), batter_dists AS (
+	SELECT
+		striker_name
+	,	batter_id
+	, 	over
+	,	(SUM(CASE WHEN runs = 0 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "0"
+	,	(SUM(CASE WHEN runs = 1 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "1"
+	,	(SUM(CASE WHEN runs = 2 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "2"
+	,	(SUM(CASE WHEN runs = 3 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "3"
+	,	(SUM(CASE WHEN runs = 4 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "4"
+	,	(SUM(CASE WHEN runs = 5 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "5"
+	,	(SUM(CASE WHEN runs = 6 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "6"
+	FROM
+		legit_balls
+	GROUP BY striker_name, over, batter_id
 )
-SELECT
-	striker_name
-,	batter_id
-, 	over
-,	(SUM(CASE WHEN runs = 0 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "0"
-,	(SUM(CASE WHEN runs = 1 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "1"
-,	(SUM(CASE WHEN runs = 2 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "2"
-,	(SUM(CASE WHEN runs = 3 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "3"
-,	(SUM(CASE WHEN runs = 4 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "4"
-,	(SUM(CASE WHEN runs = 5 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "5"
-,	(SUM(CASE WHEN runs = 6 THEN 1 END) + 0.0) / SUM(Count(*)) OVER (PARTITION BY striker_name, over) AS "6"
-FROM
-	legit_balls
-GROUP BY striker_name, over, batter_id
+SELECT *
+FROM batter_dists
 ORDER BY striker_name, batter_id, over
