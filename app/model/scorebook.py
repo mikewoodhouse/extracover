@@ -12,6 +12,7 @@ class Ball:
     extra_runs: int = 0
     wicket_fell: bool = False
     striker_out: bool = True
+    # TODO: would an "ExtraType" Enum be better?
     wide: bool = False
     noball: bool = False
     bye: bool = False
