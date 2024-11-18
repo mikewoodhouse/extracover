@@ -85,6 +85,8 @@ CREATE INDEX balls_match_inns_over ON balls (match_id, innings, over);
 
 CREATE INDEX balls_bowler ON balls (bowled_by);
 
+CREATE INDEX balls_batter ON balls (batter);
+
 CREATE TABLE IF NOT EXISTS
   people (
     identifier TEXT
