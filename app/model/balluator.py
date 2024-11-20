@@ -25,11 +25,7 @@ class Balluator:
 
     def result(self, params: BallParams) -> Ball:
         r_wnb = self.rnd.random()
-        if r_wnb <= params.p_wnb:
-            return self.resolve_wnb(params, r_wnb)
-        return Ball()
+        return self.resolve_wnb(params, r_wnb) if r_wnb <= params.p_wnb else Ball()
 
     def resolve_wnb(self, params: BallParams, r_wnb: float) -> Ball:
-        if r_wnb < params.p_noball:
-            return Ball(noball=True)
-        return Ball(wide=True)
+        return Ball(noball=True) if r_wnb < params.p_noball else Ball(wide=True)
