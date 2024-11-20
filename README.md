@@ -23,3 +23,32 @@ https://cricsheet.org/register/names.csv
   * International & "level"
 * Rule variations
   * noballs - when is the deduction one and when two? Is it possible to identify as a match condition or do we need to look into competition? `info.match_type_number`, perhaps? When there are batter runs then the size of the penalty is obvious, it's otherwise that might be a problem...
+
+## Model Ideas
+
+### Machine Learning?
+
+Inputs might include:
+
+* Batter
+  * "Aggression"
+  * Balls faced (or first 10/thereafter?)
+  * Wicket likelihood
+* Bowler
+  * "Costliness"
+  * Wicket prob
+  * Wide/Noball frequency
+* Match
+  * Innings
+  * Current RR
+  * Target (if 2nd inns) RR
+  * Stage of innings (balls remaining/balls in innings?)
+* Venue
+  * Typical score stats
+
+Train on ball outcomes (one hot?):
+
+* batter runs: 0-6
+* wicket
+* wide/noball
+* bye/legbye
