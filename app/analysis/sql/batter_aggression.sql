@@ -1,13 +1,22 @@
 WITH
-  non_extra_balls AS (
+  included_matches AS (
     SELECT
-      *
+      rowid
     FROM
-      balls
+      matches
     WHERE
-      innings < 2
-      AND extra_type = ''
-      AND NOT wicket_fell
+      start_date <= :max_match_date
+  )
+, non_extra_balls AS (
+    SELECT
+      b.*
+    FROM
+      balls b
+      JOIN included_matches m ON m.rowid = b.match_id
+    WHERE
+      b.innings < 2
+      AND b.extra_type = ''
+      AND NOT b.wicket_fell
   )
 , all_by_over_avgs AS (
     SELECT
@@ -27,7 +36,7 @@ WITH
     GROUP BY
       batter
     HAVING
-      COUNT(*) >= 500
+      COUNT(*) >= :min_balls_faced
   )
 , batter_by_over_avgs AS (
     SELECT
@@ -42,7 +51,7 @@ WITH
       b.batter
     , x.over
     HAVING
-      COUNT(*) >= 10
+      COUNT(*) >= :min_balls_faced_in_over
   )
 , batter_by_over_diffs AS (
     SELECT

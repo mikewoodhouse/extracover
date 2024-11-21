@@ -1,5 +1,22 @@
 import sqlite3
+from datetime import date
 from pathlib import Path
+
+# SEE: https://docs.python.org/3/library/sqlite3.html#sqlite3-adapter-converter-recipes
+
+
+def adapt_date_iso(val: date) -> str:
+    """Adapt datetime.date to ISO 8601 date."""
+    return val.isoformat()
+
+
+def convert_date(val) -> date:
+    """Convert ISO 8601 date to datetime.date object."""
+    return date.fromisoformat(val.decode())
+
+
+sqlite3.register_adapter(date, adapt_date_iso)
+sqlite3.register_converter("date", convert_date)
 
 
 class Configurator:
@@ -17,9 +34,10 @@ class Configurator:
     def db_connection(self) -> sqlite3.Connection:
         if self.connection:
             return self.connection
-        db_path = Path(__file__).parent / self.db_filename
+        db_path = Path(__file__).parent.parent / self.db_filename
         print(f"Connecting to {db_path}")
         self.connection = sqlite3.connect(db_path)
+        self.connection.row_factory = sqlite3.Row
         return self.connection
 
 
