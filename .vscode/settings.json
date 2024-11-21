@@ -4,13 +4,4 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "sqltools.connections": [
-        {
-            "previewLimit": 50,
-            "driver": "SQLite",
-            "database": "\\\\wsl.localhost\\Ubuntu-20.04\\home\\mikew\\extracover\\male_T20.sqlite",
-            "name": "male_t20"
-        }
-    ],
-    "sqltools.useNodeRuntime": true
 }
