@@ -1,5 +1,8 @@
 from datetime import date
 from pathlib import Path
+from typing import Any
+
+import pandas as pd
 
 from app.config import config
 
@@ -20,10 +23,39 @@ def sql_text(query_filename: str) -> str:
     return open(SQL_DIR / f"{query_filename}.sql").read()
 
 
-res = db.execute(sql_text("batter_aggression"), params)
-batter_aggrs = {int(row["batter"]): row["aggression"] for row in res}
+batter_aggrs = {
+    int(row["batter"]): row["aggression"]
+    for row in db.execute(sql_text("batter_aggression"), params)
+}
 print(f"got {len(batter_aggrs)} batter aggressions")
 
-res = db.execute(sql_text("bowler_economy"), params)
-bowler_econs = {int(row["bowler"]): row["economy"] for row in res}
+bowler_econs = {
+    int(row["bowler"]): row["economy"]
+    for row in db.execute(sql_text("bowler_economy"), params)
+}
 print(f"got {len(bowler_econs)} bowler economies")
+
+
+def enriched_row(row: dict) -> dict[Any, Any]:
+    row["batter_aggro"] = batter_aggrs.get(row["batter"], 0)
+    row["bowler_econ"] = bowler_econs.get(row["bowler"], 0)
+    return row
+
+
+res: list = db.execute(sql_text("all_balls_input_data"), params).fetchall()
+rows = [dict(r) for r in res]
+
+
+def enhanced_row(d: dict) -> dict:
+    d["batter_aggr"] = batter_aggrs.get(d["batter_id"], 0.0)
+    d["bowler_econ"] = bowler_econs.get(d["bowler_id"], 0.0)
+    d.pop("batter_id")
+    d.pop("bowler_id")
+    return d
+
+
+data = [enhanced_row(r) for r in rows]
+df = pd.DataFrame(data)
+
+print(df.head())
+print(df.shape)
