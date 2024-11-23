@@ -1,3 +1,4 @@
+import csv
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -6,6 +7,7 @@ import pandas as pd
 
 from app.config import config
 
+DATA_DIR = Path.cwd() / "data"
 SQL_DIR = Path.cwd() / "app/analysis/sql"
 db = config.db_connection
 
@@ -29,11 +31,19 @@ batter_aggrs = {
 }
 print(f"got {len(batter_aggrs)} batter aggressions")
 
+with open(DATA_DIR / "batter_aggrs.csv", "w") as f:
+    writer = csv.writer(f)
+    writer.writerows([k, v] for k, v in batter_aggrs.items())
+
 bowler_econs = {
     int(row["bowler"]): row["economy"]
     for row in db.execute(sql_text("bowler_economy"), params)
 }
 print(f"got {len(bowler_econs)} bowler economies")
+
+with open(DATA_DIR / "bowler_econs.csv", "w") as f:
+    writer = csv.writer(f)
+    writer.writerows([k, v] for k, v in bowler_econs.items())
 
 
 def enriched_row(row: dict) -> dict[Any, Any]:
@@ -44,6 +54,7 @@ def enriched_row(row: dict) -> dict[Any, Any]:
 
 res: list = db.execute(sql_text("all_balls_input_data"), params).fetchall()
 rows = [dict(r) for r in res]
+print(f"got {len(rows)} bowled ball outcomes")
 
 
 def enhanced_row(d: dict) -> dict:
@@ -57,5 +68,4 @@ def enhanced_row(d: dict) -> dict:
 data = [enhanced_row(r) for r in rows]
 df = pd.DataFrame(data)
 
-print(df.head())
-print(df.shape)
+df.to_parquet(DATA_DIR / "data.parquet")
