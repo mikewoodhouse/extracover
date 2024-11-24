@@ -32,10 +32,11 @@ class Meta:
 class Event:
     name: str = ""
     stage: str = ""
+    match_number: str = ""
 
     @property
     def as_string(self) -> str:
-        return f"{self.name}|{self.stage}"
+        return f"{self.name}|{self.stage or self.match_number}"
 
 
 @dataclass_json

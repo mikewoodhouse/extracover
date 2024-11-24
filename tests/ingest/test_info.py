@@ -16,6 +16,7 @@ def info() -> Info:
         venue="bolton",
         event=Event(name="the cup", stage="first"),
         city="apple",
+        match_type_number=99,
     )
 
 
@@ -27,6 +28,7 @@ def test_info_database_fields(info):
     expected = {
         "start_date": date.today().isoformat(),
         "match_type": "banana",
+        "match_type_number": 99,
         "gender": "unknown",
         "venue": "bolton",
         "event": "the cup|first",

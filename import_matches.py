@@ -19,12 +19,17 @@ def load_match_data(db: sqlite3.Connection):
         logging.info("created tables")
 
     with StopWatch("match_loading", 2) as timer:
+        ignored = 0
         for done, match in enumerate(
             t20_matches(config.gender, config.match_type), start=1
         ):
-            MatchWriter(db).write(match)
+            # don't write Hundred matches (yet?)
+            if match.info.balls_per_over == 6:
+                MatchWriter(db).write(match)
+            else:
+                ignored += 1
             if done % 500 == 0:
-                timer.report_split(f"{done=}")
+                timer.report_split(f"{done=}, {ignored=}")
 
     for table in [
         "matches",
