@@ -5,16 +5,33 @@ from datetime import date
 
 
 @dataclass
+class Player:
+    player_id: int = -1
+    name: str = ""
+    runs_scored: int = 0
+    overs: int = 0
+    runs_conceded: int = 0
+
+
+@dataclass
+class Team:
+    name: str = ""
+    players: list[Player] = field(default_factory=list)
+
+
+@dataclass
 class Match:
-    match_id: int
-    start_date: date
-    match_type: str  # may want to become an enum?
-    gender: str  # enum?
-    venue: str
-    event: str  # might want to become a foreign key to a future events table?
-    city: str
-    overs: int
-    balls_per_over: int
+    match_id: int = 0
+    start_date: date = field(default_factory=lambda: date.today())
+    match_type: str = "T20"  # may want to become an enum?
+    gender: str = "male"  # enum?
+    venue: str = ""
+    event: str = ""  # might want to become a foreign key to a future events table?
+    city: str = ""
+    overs: int = 20
+    balls_per_over: int = 6
+    teams: list[Team] = field(default_factory=list)
+    bat_first: int = 0
 
 
 @dataclass
@@ -65,14 +82,6 @@ class Ball:
 
 
 @dataclass
-class Player:
-    name: str = ""
-    runs_scored: int = 0
-    overs: int = 0
-    runs_conceded: int = 0
-
-
-@dataclass
 class InningsCard:
     batters: list[Player] = field(default_factory=list)
     bowlers: list[Player] = field(default_factory=list)
@@ -120,6 +129,7 @@ class InningsCard:
 
 @dataclass
 class Scorebook:
+    match: Match = field(default_factory=Match)  # type: ignore
     first_innings: InningsCard = field(default_factory=InningsCard)
     second_innings: InningsCard = field(default_factory=InningsCard)
 

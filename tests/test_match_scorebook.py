@@ -32,9 +32,9 @@ from .model.fakes import fake_book
 BALLS_SQL = """
 WITH
   the_match AS (
-	SELECT rowid as match_id
-	FROM matches m
-	WHERE m.file_path LIKE '%1422138%'
+  SELECT rowid as match_id
+  FROM matches m
+  WHERE m.file_path LIKE '%1422138%'
 )
 ,  sequenced_balls AS (
     SELECT
