@@ -31,10 +31,14 @@ class Configurator:
         return f"{self.gender.lower()}_{self.match_type.lower()}.db"
 
     @property
+    def db_dir(self) -> Path:
+        return Path(__file__).parent.parent
+
+    @property
     def db_connection(self) -> sqlite3.Connection:
         if self.connection:
             return self.connection
-        db_path = Path(__file__).parent.parent / self.db_filename
+        db_path = self.db_dir / self.db_filename
         print(f"Connecting to {db_path}")
         self.connection = sqlite3.connect(db_path)
         self.connection.row_factory = sqlite3.Row
