@@ -8,14 +8,15 @@ from dataclasses import dataclass, field
 class OverFrequencyRecord:
     name: str
     over: int
-    frequency: float
+    frequency: int
+    player_id: int = 0
 
 
 @dataclass
 class OverWeightings:
-    bowlers: dict[str, float] = field(default_factory=dict)
+    bowlers: dict[int, float] = field(default_factory=dict)
 
-    def selected(self, exclude: list[str]) -> str:
+    def selected(self, exclude: list[int]) -> int:
         available_bowlers = {k: v for k, v in self.bowlers.items() if k not in exclude}
         names = list(available_bowlers.keys())
         weights = list(available_bowlers.values())
@@ -27,18 +28,18 @@ class BowlingOrderGenerator:
     def __init__(self, freqs: list[OverFrequencyRecord]) -> None:
         self.over_weights = [OverWeightings() for _ in range(20)]
         for ow in freqs:
-            self.over_weights[ow.over].bowlers[ow.name] = ow.frequency
+            self.over_weights[ow.over].bowlers[ow.player_id] = ow.frequency
         if any(len(wtg.bowlers) == 0 for wtg in self.over_weights):
             raise ValueError("no bowler frequencies for at least one overs")
-        if len(Counter(order.name for order in freqs)) < 5:
+        if len(Counter(order.player_id for order in freqs)) < 5:
             raise ValueError("too few bowlers supplied - must be at least 5")
 
     def bowling_order(self) -> list[str]:
         def make_an_order() -> list[str]:
-            num_bowled: dict[str, int] = defaultdict(int)
-            b, last_b = "", ""
+            num_bowled: dict[int, int] = defaultdict(int)
+            b, last_b = 0, 0
             bowling_order = []
-            bowled_out: list[str] = []
+            bowled_out: list[int] = []
             weights = copy.deepcopy(self.over_weights)
             for ov in weights:
                 b = ov.selected(exclude=[last_b] + bowled_out)

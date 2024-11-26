@@ -1,50 +1,38 @@
 WITH
-  bowlers AS (
-    SELECT
-      p.name
-    , p.rowid AS player_id
+  match_history AS (
+    SELECT DISTINCT
+      m.ROWID AS match_id
     FROM
-      players p
+      matches m
+      JOIN selections s ON s.match_id = m.rowid
+      JOIN tm.players b ON b.player_id = s.player_id
     WHERE
-      p.rowid IN (2702, 2717, 374, 1753, 485, 509)
+      m.start_date < :start_date
   )
 , over_allocs AS (
     SELECT DISTINCT
       b.over
+    , b.bowled_by AS player_id
     , b.match_id
-    , b.bowled_by
+    , p.name
     FROM
       balls b
-      JOIN bowlers p ON b.bowled_by = p.player_id
+      JOIN match_history m ON m.match_id = b.match_id
+      JOIN tm.players p ON b.bowled_by = p.player_id
   )
-, totals AS (
-    SELECT
-      p.player_id
-    , p.name
-    , CAST(Count(*) AS FLOAT) AS overs
-    FROM
-      bowlers p
-      LEFT JOIN over_allocs a
-    WHERE
-      a.bowled_by = p.player_id
-    GROUP BY
-      p.player_id
-  )
-, alloc_counts AS (
+, over_freqs AS (
     SELECT
       a.over
-    , t.name
-    , a.bowled_by
-    , count(*) / t.overs AS frequency
+    , a.player_id
+    , a.name
+    , count(*)    AS frequency
     FROM
       over_allocs a
-      JOIN totals t ON t.player_id = a.bowled_by
     GROUP BY
       a.over
-    , a.bowled_by
-    , t.name
+    , a.player_id
   )
 SELECT
   *
 FROM
-  alloc_counts
+  over_freqs
