@@ -1,8 +1,5 @@
-import csv
 import sqlite3
 from pathlib import Path
-
-import pandas as pd
 
 from app.config import config
 from app.model.batting_order_generator import (
@@ -10,7 +7,7 @@ from app.model.batting_order_generator import (
     BattingOrderGenerator,
 )
 from app.model.bowling_order_generator import BowlingOrderGenerator, OverFrequencyRecord
-from app.model.scorebook import Match, Player, Scorebook, Team
+from app.model.scorebook import Match, Player, Team
 
 match = Match(
     teams=[
@@ -80,8 +77,8 @@ with config.db_connection as db:
     for row in csr.fetchall():
         player_id = int(row["player_id"])
         position = int(row["position"]) - 1
-        freq = float(row["freq"])
-        batting_pos_freqs[player_id].frequencies[position] = freq
+        num_times = float(row["times_in_position"])
+        batting_pos_freqs[player_id].times_in_positions[position] = num_times
     csr.close()
 
     for team in match.teams:

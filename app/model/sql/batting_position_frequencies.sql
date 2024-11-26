@@ -44,7 +44,7 @@ SELECT
   player_id
 , name
 , position
-, COUNT(*)  AS freq
+, COUNT(*)  AS times_in_position
 FROM
   positions_batted
 GROUP BY

@@ -6,10 +6,10 @@ from dataclasses import dataclass, field
 
 @dataclass
 class OverFrequencyRecord:
-    name: str
-    over: int
-    frequency: int
     player_id: int = 0
+    name: str = ""
+    over: int = 0
+    frequency: float = 0.0
 
     def __post_init__(self) -> None:
         self.player_id = int(self.player_id)
