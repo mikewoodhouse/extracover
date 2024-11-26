@@ -11,6 +11,9 @@ class OverFrequencyRecord:
     frequency: int
     player_id: int = 0
 
+    def __post_init__(self) -> None:
+        self.player_id = int(self.player_id)
+
 
 @dataclass
 class OverWeightings:

@@ -11,6 +11,9 @@ class BatterPositionFrequencies:
     player_id: int = 0
     frequencies: list[float] = field(default_factory=lambda: empty_freq_list())
 
+    def __repr__(self) -> str:
+        return f"{self.name} [{self.player_id}]: {self.frequencies}"
+
 
 class BattingOrderGenerator:
     def __init__(self, batter_freqs: list[BatterPositionFrequencies]) -> None:

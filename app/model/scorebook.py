@@ -3,6 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
+from app.model.batting_order_generator import BattingOrderGenerator
+from app.model.bowling_order_generator import BowlingOrderGenerator
+
 
 @dataclass
 class Player:
@@ -17,6 +20,8 @@ class Player:
 class Team:
     name: str = ""
     players: list[Player] = field(default_factory=list)
+    bowling_order_gen: BowlingOrderGenerator | None = None
+    batting_order_gen: BattingOrderGenerator | None = None
 
 
 @dataclass
@@ -32,6 +37,12 @@ class Match:
     balls_per_over: int = 6
     teams: list[Team] = field(default_factory=list)
     bat_first: int = 0
+
+    @property
+    def db_params(self) -> dict:
+        return {
+            "start_date": self.start_date,
+        }
 
 
 @dataclass
