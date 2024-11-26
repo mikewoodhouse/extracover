@@ -1,5 +1,6 @@
 from app.model.predicto import Predicto
+from app.model.scorebook import Scorebook
 
 
 def test_it_builds():
-    assert Predicto() is not None
+    assert Predicto(Scorebook()) is not None
