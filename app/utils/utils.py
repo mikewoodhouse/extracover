@@ -42,12 +42,16 @@ def row_count(db: sqlite3.Connection, table: str) -> int:
 
 
 class StopWatch:
-    def __init__(self, msg: str = "", decimals: int = 8) -> None:
+    def __init__(
+        self, msg: str = "", decimals: int = 8, report_every: int = 1000
+    ) -> None:
         self.msg = msg
         self.elapsed_time = 0
         self.start_time = 0
         self.last_split = 0.0
         self.decimals = decimals
+        self.ticks: int = 0
+        self.report_every = report_every
 
     def __enter__(self):
         self.start_time = perf_counter()
@@ -67,5 +71,11 @@ class StopWatch:
         split_time = time_now - self.last_split
         self.last_split = time_now
         print(
-            f"{datetime.now()} {split_time:.{self.decimals}f} {self.elapsed:.{self.decimals}f} {msg}"
+            f"{datetime.now()} {split_time:.{self.decimals}f} {self.elapsed:.{self.decimals}f}"
+            f" {msg}{(' ' + str(self.ticks)) if self.ticks else ''} "
         )
+
+    def tick(self) -> None:
+        self.ticks += 1
+        if self.ticks % self.report_every == 0:
+            self.report_split()
