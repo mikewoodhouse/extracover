@@ -35,12 +35,15 @@ class Configurator:
         return Path(__file__).parent.parent
 
     @property
+    def db_path(self) -> Path:
+        return self.db_dir / self.db_filename
+
+    @property
     def db_connection(self) -> sqlite3.Connection:
         if self.connection:
             return self.connection
-        db_path = self.db_dir / self.db_filename
-        print(f"Connecting to {db_path}")
-        self.connection = sqlite3.connect(db_path)
+        print(f"Connecting to {self.db_path}")
+        self.connection = sqlite3.connect(self.db_path)
         self.connection.row_factory = sqlite3.Row
         return self.connection
 
