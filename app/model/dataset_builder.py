@@ -26,6 +26,7 @@ class Match:
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Ball:
+    innings: int
     over: int
     ball: int
     ball_seq: int
@@ -42,6 +43,14 @@ class Ball:
     @property
     def wide_noball(self) -> bool:
         return self.extra_type in ("wide", "noball")
+
+    @property
+    def batsman_out(self) -> bool:
+        return bool(self.how_out) and not self.how_out.startswith("retired")
+
+    @property
+    def was_legal(self) -> bool:
+        return self.extra_type == ""
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -140,6 +149,30 @@ class Player:
         return s.replace("self.", "")
 
 
+@dataclass
+class MatchState:
+    total: int = 0
+    target: int = 0
+    wickets: int = 0
+    balls_bowled: int = 0
+    run_rate: float = 0.0
+    req_rate: float = 0.0
+
+    def update(self, ball: Ball) -> None:
+        self.total += ball.batter_runs + ball.extra_runs
+        if ball.batsman_out:
+            self.wickets += 1
+        if ball.was_legal:
+            self.balls_bowled += 1
+        self.run_rate = 6.0 * self.total / self.balls_bowled if self.balls_bowled else 0
+        if ball.innings == 1:
+            self.req_rate = (
+                (self.target + 1.0) / (120.0 - self.balls_bowled)
+                if self.balls_bowled < 120
+                else 0
+            )
+
+
 class DatasetBuilder:
     def __init__(self, db: Database) -> None:
         self.db = db
@@ -153,14 +186,13 @@ class DatasetBuilder:
                 match = Match(**row)
                 self.process_match(match.match_id)
                 stopwatch.tick()
-        for p in self.players.values():
-            if p.matches > 200:
-                print(p)
 
     def process_match(self, match_id: int):
         self.add_players(match_id)
+        target = 0
         for innings in range(2):
-            has_batted = set()
+            has_batted: set[int] = set()
+            state = MatchState(target=target if innings == 1 else 0)
             for row in self.db.query_result(
                 """SELECT
                         * FROM balls
@@ -172,22 +204,8 @@ class DatasetBuilder:
             ):
                 ball = Ball(**row)
                 self.update_for_ball(has_batted, ball)
-
-    def update_for_ball(self, has_batted, ball):
-        batter = self.players[ball.batter]
-        bowler = self.players[ball.bowled_by]
-
-        # batting order
-        if ball.batter not in has_batted:
-            batter.record_batting_position(len(has_batted))
-            has_batted.add(ball.batter)
-        if ball.non_striker not in has_batted:
-            self.players[ball.non_striker].record_batting_position(len(has_batted))
-            has_batted.add(ball.non_striker)
-
-            # ball-based events
-        batter.record_ball_faced(ball)
-        bowler.record_ball_bowled(ball)
+                state.update(ball)
+            target = state.total
 
     def add_players(self, match_id):
         for row in self.db.query_result(
@@ -203,3 +221,19 @@ class DatasetBuilder:
             if not self.players.get(pid, None):
                 self.players[pid] = Player(**row)
             self.players[pid].matches += 1
+
+    def update_for_ball(self, has_batted, ball):
+        batter = self.players[ball.batter]
+        bowler = self.players[ball.bowled_by]
+
+        # batting order
+        if ball.batter not in has_batted:
+            batter.record_batting_position(len(has_batted))
+            has_batted.add(ball.batter)
+        if ball.non_striker not in has_batted:
+            self.players[ball.non_striker].record_batting_position(len(has_batted))
+            has_batted.add(ball.non_striker)
+
+        # ball-based events
+        batter.record_ball_faced(ball)
+        bowler.record_ball_bowled(ball)
