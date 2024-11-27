@@ -52,6 +52,10 @@ CREATE TABLE IF NOT EXISTS
 
 CREATE INDEX player_reg ON players (reg);
 
+/*
+NOTE: may be more than 11 selections for a team: some comps (IPL at least some
+of the time) allow a player to be substituted in...
+ */
 CREATE TABLE IF NOT EXISTS
   selections (
     match_id  INTEGER
@@ -70,9 +74,9 @@ CREATE TABLE IF NOT EXISTS
   , over INTEGER
   , ball_seq INTEGER /* includes wides/noballs */
   , ball INTEGER /* of match.balls_per_over */
-  , bowled_by TEXT
-  , batter TEXT
-  , non_striker TEXT
+  , bowled_by INTEGER
+  , batter INTEGER
+  , non_striker INTEGER
   , batter_runs INTEGER
   , extra_runs INTEGER
   , extra_type TEXT
