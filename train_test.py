@@ -97,8 +97,7 @@ with config.db_connection as db:
 
 # get batter aggressions
 # get bowler_economies
+# select team to bat first
 # for each innings
-# # for each team
-# # # build batting order
-# # # build bowling order
-# # select team to bat first
+# # build batting order
+# # build bowling order
