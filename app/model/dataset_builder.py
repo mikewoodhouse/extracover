@@ -225,8 +225,7 @@ class MLRow:
     start_date: date
     innings: int
     ball_of_innings: int
-    in_powerplay: int
-    in_last_two: int
+    phase: int
     wickets_down: int
     run_rate: float
     req_rate: float  # what value when first innings?
@@ -295,8 +294,7 @@ class MLRow:
             start_date=state.start_date,
             innings=state.innings,
             ball_of_innings=state.balls_bowled,
-            in_powerplay=int(ball.over < 6),
-            in_last_two=int(ball.over > 17),
+            phase=0 if ball.over < 6 else 2 if ball.over > 17 else 1,
             wickets_down=state.wickets,
             run_rate=state.run_rate,
             req_rate=state.req_rate,
