@@ -223,8 +223,8 @@ class MLRow:
     start_date: date
     innings: int
     ball_of_innings: int
-    # in_powerplay: int
-    # in_last_two: int
+    in_powerplay: int
+    in_last_two: int
     wickets_down: int
     run_rate: float
     req_rate: float  # what value when first innings?
@@ -292,8 +292,8 @@ class MLRow:
             start_date=state.start_date,
             innings=state.innings,
             ball_of_innings=state.balls_bowled,
-            # in_powerplay=int(ball.over < 6),
-            # in_last_two=int(ball.over > 17),
+            in_powerplay=int(ball.over < 6),
+            in_last_two=int(ball.over > 17),
             wickets_down=state.wickets,
             run_rate=state.run_rate,
             req_rate=state.req_rate,
@@ -318,9 +318,7 @@ class DatasetBuilder:
     def __init__(self, db: Database, warm_up_match_count: int = 1000) -> None:
         self.db = db
         self.players: dict[int, Player] = {}
-        self.ml_rows_powerplay: list[MLRow] = []
-        self.ml_rows_middle: list[MLRow] = []
-        self.ml_rows_last_two: list[MLRow] = []
+        self.ml_rows: list[MLRow] = []
         self.warm_up_match_count = warm_up_match_count
         self.matches_run = 0
 
@@ -335,22 +333,10 @@ class DatasetBuilder:
                     self.matches_run += 1
                     stopwatch.tick()
 
-            csv_path = DATA_DIR / "ml_rows_powerplay.csv"
+            csv_path = DATA_DIR / "ml_rows.csv"
             with csv_path.open("w") as csv:
-                dataclass_writer = DataclassWriter(csv, self.ml_rows_powerplay, MLRow)
-                print(f"writing {len(self.ml_rows_powerplay)} powerplay ML rows")
-                dataclass_writer.write()
-
-            csv_path = DATA_DIR / "ml_rows_middle.csv"
-            with csv_path.open("w") as csv:
-                dataclass_writer = DataclassWriter(csv, self.ml_rows_middle, MLRow)
-                print(f"writing {len(self.ml_rows_middle)} middle-game ML rows")
-                dataclass_writer.write()
-
-            csv_path = DATA_DIR / "ml_rows_last_two.csv"
-            with csv_path.open("w") as csv:
-                dataclass_writer = DataclassWriter(csv, self.ml_rows_last_two, MLRow)
-                print(f"writing {len(self.ml_rows_last_two)} ML last 2 overs rows")
+                dataclass_writer = DataclassWriter(csv, self.ml_rows, MLRow)
+                print(f"writing {len(self.ml_rows)} ML rows")
                 dataclass_writer.write()
 
     def process_match(self, match: Match) -> None:
@@ -385,16 +371,11 @@ class DatasetBuilder:
                 ml_row = MLRow.build(ball, state, batter, bowler)
 
                 if self.matches_run > MIN_MATCHES and MLRow.in_bounds(ml_row):
-                    if ball.over < 6:
-                        self.ml_rows_powerplay.append(ml_row)
-                    elif ball.over < 17:
-                        self.ml_rows_middle.append(ml_row)
-                    else:
-                        self.ml_rows_last_two.append(ml_row)
+                    self.ml_rows.append(ml_row)
 
                 self.update_for_ball(has_batted, ball, batter, bowler)
                 state.update(ball)
-            # print(state)
+
             target = state.total
 
     def add_players(self, match_id):
