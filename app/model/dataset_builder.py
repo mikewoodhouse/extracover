@@ -324,6 +324,7 @@ class DatasetBuilder:
         self.ml_rows: list[MLRow] = []
         self.warm_up_match_count = warm_up_match_count
         self.matches_run = 0
+        self.outside_normal_req_rates: int = 0
 
     def run(self) -> None:
         with StopWatch(msg="DatasetBuilder.run()"):
@@ -348,6 +349,7 @@ class DatasetBuilder:
                 dataclass_writer = DataclassWriter(csv, self.ml_rows, MLRow)
                 print(f"writing {len(self.ml_rows)} ML rows")
                 dataclass_writer.write()
+        print(f"{self.outside_normal_req_rates=}")
 
     def process_match(self, match: Match) -> None:
         match_id, start_date = match.match_id, match.start_date
@@ -380,8 +382,10 @@ class DatasetBuilder:
                 bowler = self.players[ball.bowled_by]
 
                 ml_row = MLRow.build(ball, state, batter, bowler)
-
-                self.ml_rows.append(ml_row)
+                if ml_row.req_rate >= 0 and ml_row.req_rate <= 6.0:
+                    self.ml_rows.append(ml_row)
+                else:
+                    self.outside_normal_req_rates += 1
 
                 self.update_for_ball(has_batted, ball, batter, bowler)
                 state.update(ball)
