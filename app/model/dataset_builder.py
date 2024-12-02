@@ -10,7 +10,6 @@ from dataclasses_json import Undefined, dataclass_json
 
 from app.utils import Database, StopWatch
 
-MIN_MATCHES = 1000
 AVG_RUNS_PER_BALL = 1.21
 AVG_WICKET_PROB = 0.054
 AVG_WIDE_NOBALL_RATE = 0.036
@@ -32,6 +31,7 @@ DATA_DIR = Path(__file__).parent.parent.parent / "data"
 @dataclass
 class Match:
     match_id: int
+    match_number: int
     start_date: date
 
 
@@ -182,6 +182,7 @@ class Player:
 
 @dataclass
 class MatchState:
+    match_number: int
     start_date: date
     innings: int = 0
     total: int = 0
@@ -220,6 +221,7 @@ class MatchState:
 @dataclass
 class MLRow:
     # inputs
+    match_number: int
     start_date: date
     innings: int
     ball_of_innings: int
@@ -289,6 +291,7 @@ class MLRow:
             print(ball)
             outcome = -1
         return MLRow(
+            match_number=state.match_number,
             start_date=state.start_date,
             innings=state.innings,
             ball_of_innings=state.balls_bowled,
@@ -326,7 +329,14 @@ class DatasetBuilder:
         with StopWatch(msg="DatasetBuilder.run()"):
             with StopWatch(msg="match loop", decimals=5) as stopwatch:
                 for row in self.db.query_result(
-                    "SELECT ROWID AS match_id, * FROM matches ORDER BY start_date"
+                    """
+                    SELECT
+                        ROW_NUMBER() OVER (ORDER BY start_date, match_type_number, ROWID) AS match_number
+                    ,	ROWID AS match_id
+                    ,	*
+                    FROM matches
+                    ORDER BY start_date, match_type_number, ROWID
+                    """
                 ):
                     match = Match(**row)
                     self.process_match(match)
@@ -346,6 +356,7 @@ class DatasetBuilder:
         for innings in range(2):
             has_batted: set[int] = set()
             state = MatchState(
+                match_number=match.match_number,
                 start_date=start_date,
                 innings=innings,
                 target=target if innings == 1 else 0,
@@ -370,8 +381,7 @@ class DatasetBuilder:
 
                 ml_row = MLRow.build(ball, state, batter, bowler)
 
-                if self.matches_run > MIN_MATCHES and MLRow.in_bounds(ml_row):
-                    self.ml_rows.append(ml_row)
+                self.ml_rows.append(ml_row)
 
                 self.update_for_ball(has_batted, ball, batter, bowler)
                 state.update(ball)
