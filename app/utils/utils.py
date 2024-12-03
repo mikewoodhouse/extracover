@@ -46,7 +46,6 @@ class StopWatch:
         self, msg: str = "", decimals: int = 8, report_every: int = 1000
     ) -> None:
         self.msg = msg
-        self.elapsed_time = 0
         self.start_time = 0
         self.last_split = 0.0
         self.decimals = decimals
@@ -56,19 +55,21 @@ class StopWatch:
     def __enter__(self):
         self.start_time = perf_counter()
         self.last_split = self.start_time
-        if self.msg:
+        if len(self.msg):
             print(f"{datetime.now()} {self.msg} entered")
         return self
 
     def __exit__(self, type, value, traceback):
         if self.msg:
-            print(
-                f"{datetime.now()} {self.elapsed:.{self.decimals}f} {self.msg} exited"
-            )
+            print(f"{datetime.now()} {self.elapsed_formatted} {self.msg} exited")
 
     @property
     def elapsed(self) -> float:
         return perf_counter() - self.start_time
+
+    @property
+    def elapsed_formatted(self) -> str:
+        return f"{self.elapsed:.{self.decimals}f}"
 
     def report_split(self, msg: str = ""):
         time_now = perf_counter()
@@ -76,7 +77,7 @@ class StopWatch:
         self.last_split = time_now
         print(
             f"{datetime.now()} {split_time:.{self.decimals}f}"
-            f"{self.elapsed:.{self.decimals}f} {msg}{f' {str(self.ticks)}' if self.ticks else ''} "
+            f"{self.elapsed_formatted} {msg}{f' {str(self.ticks)}' if self.ticks else ''} "
         )
 
     def tick(self) -> None:
