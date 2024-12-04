@@ -82,9 +82,7 @@ class Balluator:
         self.rnd = rnd or Random()
 
     def result(self, params: BallParams) -> Ball:
-        outcome = self.rnd.choices(
-            range(len(params.probability_array)), weights=params.probability_array
-        )[0]
+        outcome = self.index_from(params.probability_array)
         match outcome:
             case Outcome.WIDE:
                 extra_runs = self.index_from(WIDE_EXTRA_RUNS)
