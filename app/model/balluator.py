@@ -21,10 +21,10 @@ NB_BATTER_RUNS: list[int] = [3500, 2039, 449, 19, 928, 0, 521]
 # select count(*) from balls where extra_type = 'wide' group by batter_runs order by batter_runs
 WIDE_EXTRA_RUNS: list[int] = [0, 50490, 2373, 505, 84, 1942]
 
-
+# as for wides above
 BYE_EXTRA_RUNS: list[int] = [0, 3722, 463, 61, 1438, 4]
 
-
+# as for wides above
 LEGBYE_EXTRA_RUNS: list[int] = [0, 23300, 1423, 128, 1901, 31, 1]
 
 
