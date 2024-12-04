@@ -42,13 +42,18 @@ class Ball:
     over: int
     ball: int
     ball_seq: int
-    bowled_by: int
+
     batter: int
     non_striker: int
+    bowled_by: int
+
     batter_runs: int
     extra_runs: int
-    extra_type: str
+
     wicket_fell: bool
+
+    extra_type: str
+
     dismissed: str
     how_out: str
 
