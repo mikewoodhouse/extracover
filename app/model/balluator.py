@@ -99,6 +99,20 @@ class Balluator:
             case Outcome.LEGBYE:
                 extra_runs = self.index_from(LEGBYE_EXTRA_RUNS)
                 return Ball(legbye=True, extra_runs=extra_runs)
+            case Outcome.WICKET:
+                return Ball(wicket_fell=True)
+            case Outcome.DOTBALL:
+                return Ball()
+            case Outcome.SINGLE:
+                return Ball(batter_runs=1)
+            case Outcome.TWO:
+                return Ball(batter_runs=2)
+            case Outcome.THREE:
+                return Ball(batter_runs=3)
+            case Outcome.FOUR:
+                return Ball(batter_runs=4)
+            case Outcome.SIX:
+                return Ball(batter_runs=6)
             case _:
                 raise ValueError(f"Unexpected {outcome=}")
 
