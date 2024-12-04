@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from enum import IntEnum
 from random import Random
+
+from app.model.classes import Outcome
 
 from .scorebook import Ball
 
@@ -26,20 +27,6 @@ BYE_EXTRA_RUNS: list[int] = [0, 3722, 463, 61, 1438, 4]
 
 # as for wides above
 LEGBYE_EXTRA_RUNS: list[int] = [0, 23300, 1423, 128, 1901, 31, 1]
-
-
-class Outcome(IntEnum):
-    WIDE = 0
-    NOBALL = 1
-    BYE = 2
-    LEGBYE = 3
-    WICKET = 4
-    DOTBALL = 5
-    SINGLE = 6
-    TWO = 7
-    THREE = 8
-    FOUR = 9
-    SIX = 10
 
 
 @dataclass
