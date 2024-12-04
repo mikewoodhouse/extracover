@@ -87,17 +87,20 @@ class Balluator:
         )[0]
         match outcome:
             case Outcome.WIDE:
-                extra_runs = self.rnd.choices(
-                    range(len(WIDE_EXTRA_RUNS)), weights=WIDE_EXTRA_RUNS, k=1
-                )[0]
+                extra_runs = self.index_from(WIDE_EXTRA_RUNS)
                 return Ball(wide=True, extra_runs=extra_runs)
             case Outcome.NOBALL:
-                extra_runs = self.rnd.choices(
-                    range(len(NB_EXTRA_RUNS)), weights=NB_EXTRA_RUNS, k=1
-                )[0]
-                batter_runs = self.rnd.choices(
-                    range(len(NB_BATTER_RUNS)), weights=NB_BATTER_RUNS, k=1
-                )[0]
+                extra_runs = self.index_from(NB_EXTRA_RUNS)
+                batter_runs = self.index_from(NB_BATTER_RUNS)
                 return Ball(noball=True, extra_runs=extra_runs, batter_runs=batter_runs)
+            case Outcome.BYE:
+                extra_runs = self.index_from(BYE_EXTRA_RUNS)
+                return Ball(bye=True, extra_runs=extra_runs)
+            case Outcome.LEGBYE:
+                extra_runs = self.index_from(LEGBYE_EXTRA_RUNS)
+                return Ball(legbye=True, extra_runs=extra_runs)
             case _:
                 raise ValueError(f"Unexpected {outcome=}")
+
+    def index_from(self, weights: list[int] | list[float]) -> int:
+        return self.rnd.choices(range(len(weights)), weights=weights, k=1)[0]
