@@ -16,11 +16,15 @@ class MatchState:
     balls_bowled: int = 0
     run_rate: float = 0.0  # per *ball*
     req_rate: float = 0.0  # per *ball*
+    batter: int = -1
+    bowler: int = -1
     balls_faced: defaultdict[int, int] = field(default_factory=lambda: defaultdict(int))
 
     # region methods
 
     def update(self, ball: Ball) -> None:
+        self.batter = ball.batter
+        self.bowler = ball.bowled_by
         self.total += ball.batter_runs + ball.extra_runs
         if ball.batsman_out:
             self.wickets += 1
@@ -36,8 +40,8 @@ class MatchState:
                 if self.balls_bowled < 120
                 else 0.0
             )
-            # print(
-            #     f"{self.target=} {self.total=}/{self.wickets} {self.balls_bowled} {self.req_rate=}"
-            # )
+
+    def __repr__(self) -> str:
+        return f"{self.target=} {self.total=}/{self.wickets} {self.balls_bowled} {self.req_rate=}"
 
     # endregion
