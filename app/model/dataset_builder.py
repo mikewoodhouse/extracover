@@ -40,35 +40,13 @@ class MLRow:
     bowler_economy: float
     bowler_wicket_prob: float
     bowler_wide_noball_rate: float
-    # outputs - what actually happened
+    # output - what actually happened
     outcome: int
-    # wide: int
-    # noball: int
-    # bye: int
-    # legbye: int
-    # wicket: int
-    # dot_ball: int
-    # single: int
-    # two: int
-    # three: int
-    # four: int
-    # six: int
 
     @classmethod
     def build(
         cls, ball: Ball, state: MatchState, batter: Player, bowler: Player
     ) -> MLRow:
-        # wide = int(ball.extra_type == "wide"),
-        # noball = int(ball.extra_type == "noball"),
-        # bye = int(ball.extra_type == "bye"),
-        # legbye = int(ball.extra_type == "legbye"),
-        # wicket = int(ball.wicket_fell),
-        # dot_ball = int(ball.batter_runs == 0),
-        # single = int(ball.batter_runs == 1),
-        # two = int(ball.batter_runs == 2),
-        # three = int(ball.batter_runs == 3),
-        # four = int(ball.batter_runs == 4),
-        # six = int(ball.batter_runs > 4),
         outcome = -1
         if ball.extra_type == "wide":
             outcome = 0
