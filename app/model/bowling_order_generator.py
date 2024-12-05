@@ -37,8 +37,8 @@ class BowlingOrderGenerator:
         if len(Counter(order.player_id for order in freqs)) < 5:
             raise ValueError("too few bowlers supplied - must be at least 5")
 
-    def bowling_order(self) -> list[str]:
-        def make_an_order() -> list[str]:
+    def bowling_order(self) -> list[int]:
+        def make_an_order() -> list[int]:
             num_bowled: dict[int, int] = defaultdict(int)
             b, last_b = 0, 0
             bowling_order = []

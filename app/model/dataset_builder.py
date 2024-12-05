@@ -9,6 +9,8 @@ from dataclass_csv import DataclassWriter
 from app.model.classes import Ball, Match, MatchState, Player
 from app.utils import Database, StopWatch
 
+AVG_WIDE_NOBALL_RATE = 0.036
+
 
 def empty_list(size: int) -> list[int]:
     return [0] * size

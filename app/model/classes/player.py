@@ -6,7 +6,6 @@ from app.model.classes.ball import Ball
 
 AVG_RUNS_PER_BALL = 1.21
 AVG_WICKET_PROB = 0.054
-AVG_WIDE_NOBALL_RATE = 0.036
 
 
 def empty_list(size: int) -> list[int]:

@@ -24,7 +24,7 @@ class Configurator:
     match_type: str = "T20"
 
     def __init__(self) -> None:
-        self.connection = None
+        self.connection: sqlite3.Connection | None = None
 
     @property
     def db_filename(self) -> str:
