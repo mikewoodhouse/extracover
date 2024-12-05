@@ -174,7 +174,7 @@ class DatasetBuilder:
 
             target = state.total
 
-    def add_players(self, match_id):
+    def add_players(self, match_id: int) -> None:
         for row in self.db.query_result(
             """SELECT player_id, name
                     FROM players p
@@ -189,7 +189,9 @@ class DatasetBuilder:
                 self.players[pid] = Player(**row)
             self.players[pid].matches += 1
 
-    def update_for_ball(self, has_batted, ball, batter, bowler):
+    def update_for_ball(
+        self, has_batted: set[int], ball: Ball, batter: Player, bowler: Player
+    ) -> None:
         # batting order
         if ball.batter not in has_batted:
             batter.record_batting_position(len(has_batted))
