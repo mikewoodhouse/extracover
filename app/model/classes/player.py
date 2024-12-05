@@ -18,6 +18,7 @@ class Player:
     player_id: int
     name: str
     matches: int = 0
+    # following are totals over *all* matches
     batting_positions: list[int] = field(default_factory=lambda: empty_list(11))
     balls_faced: int = 0
     times_out: int = 0
