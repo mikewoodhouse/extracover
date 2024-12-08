@@ -52,3 +52,13 @@ Train on ball outcomes (one hot?):
 * wicket
 * wide/noball
 * bye/legbye
+
+# Notes
+
+Wides & noballs by phase:
+
+| phase | wides | noballs |   total | total (legit) | wide % |   no % |
+| :---: | ----: | ------: | ------: | ------------: | -----: | -----: |
+|   0   | 19997 |    2319 |  563215 |        540899 |  3.70% | 0.439% |
+|   1   | 29972 |    3852 | 1051477 |       1017653 |  2.95% | 0.379% |
+|   2   |  5426 |    1285 |  134451 |        127740 |  4.25% |  1.01% |
