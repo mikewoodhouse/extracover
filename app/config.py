@@ -31,12 +31,20 @@ class Configurator:
         return f"{self.gender.lower()}_{self.match_type.lower()}.db"
 
     @property
-    def db_dir(self) -> Path:
+    def project_dir(self) -> Path:
         return Path(__file__).parent.parent
+
+    @property
+    def db_dir(self) -> Path:
+        return self.project_dir
 
     @property
     def db_path(self) -> Path:
         return self.db_dir / self.db_filename
+
+    @property
+    def data_path(self) -> Path:
+        return self.project_dir / "data"
 
     @property
     def db_connection(self) -> sqlite3.Connection:
