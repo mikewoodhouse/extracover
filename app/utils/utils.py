@@ -3,15 +3,16 @@ import sqlite3
 import sys
 from contextlib import closing
 from datetime import datetime
-from pathlib import Path
 from time import perf_counter
 from typing import Any, Generator
 
 from app.ingest.classes import Match
+from app.config import config
 
 
 def t20_dirs(gender: str, match_type: str):
-    yield from Path("matches").glob(f"{gender}/{match_type}")
+    match_path = config.data_path / "matches"
+    yield from match_path.glob(f"{gender}/{match_type}")
 
 
 def t20_matches(

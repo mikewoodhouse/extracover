@@ -1,15 +1,12 @@
 import json
-import sqlite3
 from datetime import datetime
-from pathlib import Path
-
-from app.config import config
+import sqlite3
 from app.ingest.cricinfo_player import CricinfoPlayer
 from app.utils import StopWatch
 
-DATA_DIR = Path.cwd() / "data"
+from app.config import config
 
-json_dir = DATA_DIR / "player_json"
+json_dir = config.data_path / "player_json"
 
 
 SQL = """
@@ -24,17 +21,18 @@ JOIN players plyr ON plyr.reg = peeps.identifier
 WHERE plyr.datetime_spidered IS NULL
 """
 
-db = sqlite3.connect(config.db_filename)
+db = config.db_connection
 db.row_factory = sqlite3.Row
-
 rows = db.execute(SQL).fetchall()
+
+print(f"retrieved {len(rows)} people rows")
 
 done = 0
 not_done = 0
 
 print(f"{datetime.now()} {len(rows)} players to process")
 
-with StopWatch("Cricinfo spider", 3) as timer:
+with StopWatch("Cricinfo spider", decimals=3) as timer:
 
     for row in rows:
         cricinfo_id = row["key_cricinfo"]
@@ -43,8 +41,11 @@ with StopWatch("Cricinfo spider", 3) as timer:
         try:
             info_getter = CricinfoPlayer(cricinfo_id, cricinfo_id_2)
         except Exception as e:
-            print(f"Exception {e} querying cricinfo for {row}")
+            print(
+                f"Exception {e} querying cricinfo for {cricinfo_id=}, {cricinfo_id_2=}, {row}"
+            )
             not_done += 1
+            continue
         if player_info := info_getter.json:
             out_path = json_dir / f"{player_id}.json"
             with out_path.open("w") as f:

@@ -18,7 +18,7 @@ def load_match_data(db: sqlite3.Connection):
         csr.executescript(Path("schema.sql").read_text())
         logging.info("created tables")
 
-    with StopWatch("match_loading", 2) as timer:
+    with StopWatch("match_loading", decimals=2) as timer:
         ignored = 0
         for done, match in enumerate(
             t20_matches(config.gender, config.match_type), start=1
