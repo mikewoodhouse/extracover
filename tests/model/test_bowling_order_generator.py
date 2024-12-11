@@ -2,11 +2,9 @@
 
 import pytest
 
-from app.model.bowling_order_generator import (
-    BowlingOrderGenerator,
-    OverFrequencyRecord,
-    OverWeightings,
-)
+from app.model.bowling_order_generator import (BowlingOrderGenerator,
+                                               OverFrequencyRecord,
+                                               OverWeightings)
 
 
 @pytest.fixture

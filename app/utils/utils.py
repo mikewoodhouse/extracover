@@ -6,8 +6,8 @@ from datetime import datetime
 from time import perf_counter
 from typing import Any, Generator
 
-from app.ingest.classes import Match
 from app.config import config
+from app.ingest.classes import Match
 
 
 def t20_dirs(gender: str, match_type: str):

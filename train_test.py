@@ -2,11 +2,10 @@ import sqlite3
 from pathlib import Path
 
 from app.config import config
-from app.model.batting_order_generator import (
-    BatterPositionFrequencies,
-    BattingOrderGenerator,
-)
-from app.model.bowling_order_generator import BowlingOrderGenerator, OverFrequencyRecord
+from app.model.batting_order_generator import (BatterPositionFrequencies,
+                                               BattingOrderGenerator)
+from app.model.bowling_order_generator import (BowlingOrderGenerator,
+                                               OverFrequencyRecord)
 from app.model.scorebook import Match, Player, Team
 
 match = Match(

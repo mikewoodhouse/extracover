@@ -3,18 +3,8 @@ import string
 
 import pytest
 
-from app.ingest.classes import (
-    Delivery,
-    Dismissal,
-    Extras,
-    Info,
-    Innings,
-    Match,
-    Meta,
-    Over,
-    Registry,
-    Runs,
-)
+from app.ingest.classes import (Delivery, Dismissal, Extras, Info, Innings,
+                                Match, Meta, Over, Registry, Runs)
 
 
 def fake_meta() -> Meta:

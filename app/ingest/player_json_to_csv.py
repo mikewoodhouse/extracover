@@ -42,13 +42,19 @@ def player_info(player_id: str, j: dict, mod_time) -> dict:
     }
 
 
-outfile = DATA_DIR / "player_info.csv"
+def write_player_csvs():
 
-with outfile.open("w") as fout:
-    writer = csv.DictWriter(fout, fieldnames)
-    writer.writeheader()
-    for path in json_dir.glob("*.json"):
-        player_id = path.stem
-        with path.open() as fin:
-            player_json = json.load(fin)
-        writer.writerow(player_info(player_id, player_json, path.stat().st_mtime))
+    outfile = DATA_DIR / "player_info.csv"
+
+    with outfile.open("w") as fout:
+        writer = csv.DictWriter(fout, fieldnames)
+        writer.writeheader()
+        for path in json_dir.glob("*.json"):
+            player_id = path.stem
+            with path.open() as fin:
+                player_json = json.load(fin)
+            writer.writerow(player_info(player_id, player_json, path.stat().st_mtime))
+
+
+if __name__ == "__main__":
+    write_player_csvs()

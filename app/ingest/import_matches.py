@@ -67,9 +67,13 @@ def load_people(db: sqlite3.Connection):
     print("people:", row_count(db, "people"))
 
 
-if __name__ == "__main__":
+def import_everything():
     db = sqlite3.connect(config.db_filename)
     db.row_factory = sqlite3.Row
     setup_logging()
     load_match_data(db)
     load_people(db)
+
+
+if __name__ == "__main__":
+    import_everything()

@@ -1,9 +1,7 @@
 import random
 
-from app.model.batting_order_generator import (
-    BatterPositionFrequencies,
-    BattingOrderGenerator,
-)
+from app.model.batting_order_generator import (BatterPositionFrequencies,
+                                               BattingOrderGenerator)
 
 
 def test_construction():
