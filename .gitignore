@@ -5,7 +5,7 @@ __pycache__
 *.sqlite
 *.zip*
 matches
-venv
+venv*
 data
 .coverage
 .pytest_cache
@@ -15,3 +15,5 @@ data
 player_json/*.json
 *.db-journal
 .mypy_cache
+logs
+*.log
