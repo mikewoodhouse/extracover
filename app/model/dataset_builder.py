@@ -31,7 +31,7 @@ class MLRow:
     start_date: date
     innings: int
     ball_of_innings: int
-    phase: int
+    over: int
     wickets_down: int
     run_rate: float
     req_rate: float  # what value when first innings?
@@ -44,9 +44,7 @@ class MLRow:
     outcome: int
 
     @classmethod
-    def build(
-        cls, ball: Ball, state: MatchState, batter: Player, bowler: Player
-    ) -> MLRow:
+    def build(cls, ball: Ball, state: MatchState, batter: Player, bowler: Player) -> MLRow:
         outcome = -1
         if ball.extra_type == "wide":
             outcome = 0
@@ -78,7 +76,7 @@ class MLRow:
             start_date=state.start_date,
             innings=state.innings,
             ball_of_innings=state.balls_bowled,
-            phase=0 if ball.over < 6 else 2 if ball.over > 17 else 1,
+            over=ball.over,
             wickets_down=state.wickets,
             run_rate=state.run_rate,
             req_rate=state.req_rate,
@@ -87,9 +85,7 @@ class MLRow:
             bowler_economy=bowler.economy,
             bowler_wicket_prob=bowler.wicket_prob,
             bowler_wide_noball_rate=(
-                AVG_WIDE_NOBALL_RATE
-                if bowler.balls_bowled < 24
-                else bowler.wide_rate + bowler.noball_rate
+                AVG_WIDE_NOBALL_RATE if bowler.balls_bowled < 24 else bowler.wide_rate + bowler.noball_rate
             ),
             outcome=outcome,
         )
@@ -189,9 +185,7 @@ class DatasetBuilder:
                 self.players[pid] = Player(**row)
             self.players[pid].matches += 1
 
-    def update_for_ball(
-        self, has_batted: set[int], ball: Ball, batter: Player, bowler: Player
-    ) -> None:
+    def update_for_ball(self, has_batted: set[int], ball: Ball, batter: Player, bowler: Player) -> None:
         # batting order
         if ball.batter not in has_batted:
             batter.record_batting_position(len(has_batted))

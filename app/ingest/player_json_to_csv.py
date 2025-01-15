@@ -9,6 +9,7 @@ json_dir = DATA_DIR / "player_json"
 
 fieldnames = [
     "player_id",
+    "cricinfo",
     "dob",
     "role",
     "bat_style",
@@ -34,6 +35,7 @@ def player_info(player_id: str, j: dict, mod_time) -> dict:
     p = j["player"]
     return {
         "player_id": int(player_id),
+        "cricinfo": p.get("objectId", ""),
         "dob": isodate_from(p.get("dateOfBirth")),
         "role": first_from(p.get("playingRoles", [])),
         "bat_style": first_from(p.get("battingStyles", [])),
@@ -43,7 +45,6 @@ def player_info(player_id: str, j: dict, mod_time) -> dict:
 
 
 def write_player_csvs():
-
     outfile = DATA_DIR / "player_info.csv"
 
     with outfile.open("w") as fout:

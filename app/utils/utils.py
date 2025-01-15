@@ -15,9 +15,7 @@ def t20_dirs(gender: str, match_type: str):
     yield from match_path.glob(f"{gender}/{match_type}")
 
 
-def t20_matches(
-    gender: str = "*", match_type: str = "*"
-) -> Generator[Match, Any, Any]:  # list[Match]:
+def t20_matches(gender: str = "*", match_type: str = "*") -> Generator[Match, Any, Any]:  # list[Match]:
     for d in t20_dirs(gender, match_type):
         for p in d.glob("*.json"):
             match = Match.from_json(p.read_text())
@@ -43,9 +41,7 @@ def row_count(db: sqlite3.Connection, table: str) -> int:
 
 
 class StopWatch:
-    def __init__(
-        self, msg: str = "", decimals: int = 8, report_every: int = 1000
-    ) -> None:
+    def __init__(self, msg: str = "", decimals: int = 8, report_every: int = 1000) -> None:
         self.msg = msg
         self.start_time = 0
         self.last_split = 0.0
@@ -57,12 +53,12 @@ class StopWatch:
         self.start_time = perf_counter()
         self.last_split = self.start_time
         if len(self.msg):
-            print(f"{datetime.now()} {self.msg} entered")
+            print(f"{datetime.now():%H:%M:%S} {self.msg} entered")
         return self
 
     def __exit__(self, type, value, traceback):
         if self.msg:
-            print(f"{datetime.now()} {self.formatted(self.elapsed)} {self.msg} exited")
+            print(f"{datetime.now():%H:%M:%S} {self.formatted(self.elapsed)} {self.msg} exited")
 
     @property
     def elapsed(self) -> float:
@@ -76,7 +72,7 @@ class StopWatch:
         split_time = time_now - self.last_split
         self.last_split = time_now
         print(
-            f"{datetime.now()} split={self.formatted(split_time)}"
+            f"{datetime.now():%H:%M:%S} split={self.formatted(split_time)}"
             f" total={self.formatted(self.elapsed)} {msg}{f' {str(self.ticks)}' if self.ticks else ''} "
         )
 
