@@ -11,6 +11,27 @@ from app.utils import Database, StopWatch
 
 AVG_WIDE_NOBALL_RATE = 0.036
 
+BOWL_STYLE_TRANSLATION = {
+    "lb": "rs",
+    "lbg": "rs",
+    "lf": "lf",
+    "lfm": "lf",
+    "lm": "lf",
+    "lmf": "lf",
+    "ls": "ls",
+    "lsm": "ls",
+    "lws": "ls",  # left-arm wrist spin
+    "ob": "rs",
+    "rab": "rs",  # right-arm bowler
+    "rf": "rf",
+    "rfm": "rf",
+    "rm": "rf",
+    "rmf": "rf",
+    "rs": "rs",
+    "rsm": "rs",
+    "sla": "ls",
+}
+
 
 def empty_list(size: int) -> list[int]:
     return [0] * size
@@ -71,6 +92,7 @@ class MLRow:
         else:
             print(ball)
             outcome = -1
+        bowl_stat = bowler.bowling_stats["all"]
         return MLRow(
             match_number=state.match_number,
             start_date=state.start_date,
@@ -82,10 +104,10 @@ class MLRow:
             req_rate=state.req_rate,
             batter_in_first_10=int(state.balls_faced[batter.player_id] <= 10),
             batter_strike_rate=batter.strike_rate,
-            bowler_economy=bowler.economy,
-            bowler_wicket_prob=bowler.wicket_prob,
+            bowler_economy=bowl_stat.economy,
+            bowler_wicket_prob=bowl_stat.wicket_prob,
             bowler_wide_noball_rate=(
-                AVG_WIDE_NOBALL_RATE if bowler.balls_bowled < 24 else bowler.wide_rate + bowler.noball_rate
+                AVG_WIDE_NOBALL_RATE if bowl_stat.balls_bowled < 24 else bowler.wide_rate + bowler.noball_rate
             ),
             outcome=outcome,
         )
@@ -186,6 +208,11 @@ class DatasetBuilder:
             {"match_id": match_id},
         ):
             pid = row["player_id"]
+            if bat_style := row.get("bat_style", None):
+                if len(bat_style):
+                    row["bat_style"] = bat_style[0]
+            if bowl_style := row.get("bowl_style", None):
+                row["bowl_style"] = BOWL_STYLE_TRANSLATION[bowl_style]
             if not self.players.get(pid, None):
                 self.players[pid] = Player(**row)
             self.players[pid].matches += 1
@@ -200,5 +227,5 @@ class DatasetBuilder:
             has_batted.add(ball.non_striker)
 
         # ball-based events
-        batter.record_ball_faced(ball)
-        bowler.record_ball_bowled(ball)
+        batter.record_ball_faced(ball, bowler)
+        bowler.record_ball_bowled(ball, batter)
