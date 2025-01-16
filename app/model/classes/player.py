@@ -12,11 +12,66 @@ def empty_list(size: int) -> list[int]:
     return [0] * size
 
 
+BOWL_STYLE_TRANSLATION = {
+    "lb": "rs",
+    "lbg": "rs",
+    "lf": "lf",
+    "lfm": "lf",
+    "lm": "lf",
+    "lmf": "lf",
+    "ls": "ls",
+    "lsm": "ls",
+    "lws": "ls",  # left-arm wrist spin
+    "ob": "rs",
+    "rab": "rs",  # right-arm bowler
+    "rf": "rf",
+    "rfm": "rf",
+    "rm": "rf",
+    "rmf": "rf",
+    "rs": "rs",
+    "rsm": "rs",
+    "sla": "ls",
+}
+
+"""
+Apply descriptors to bat & bowl styles1
+"""
+
+
+class BatStyle:
+    def __set_name__(self, owner, name):
+        self.private_name = "_" + name
+
+    def __get__(self, obj, objtype=None) -> str:
+        value = getattr(obj, self.private_name) or "r"
+        return value[0]
+
+    def __set__(self, obj, value: str):
+        setattr(obj, self.private_name, value)
+
+
+class BowlStyle:
+    def __set_name__(self, owner, name):
+        self.private_name = "_" + name
+
+    def __get__(self, obj, objtype=None) -> str:
+        value = getattr(obj, self.private_name)
+        if not value:
+            return ""
+
+        return BOWL_STYLE_TRANSLATION[value]
+
+    def __set__(self, obj, value: str):
+        setattr(obj, self.private_name, value)
+
+
 @dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Player:
     player_id: int
     name: str
+    bat_style = BatStyle()
+    bowl_style = BowlStyle()
     matches: int = 0
     # following are totals over *all* matches
     batting_positions: list[int] = field(default_factory=lambda: empty_list(11))
@@ -33,9 +88,7 @@ class Player:
     # region methods
 
     def record_batting_position(self, pos: int) -> None:
-        pos = min(
-            pos, 10
-        )  # b/c some leagues allow an injury substitute, BPL 2021/22 as an example
+        pos = min(pos, 10)  # b/c some leagues allow an injury substitute, BPL 2021/22 as an example
         self.batting_positions[pos] += 1
 
     def record_ball_bowled(self, ball: Ball) -> None:
@@ -66,32 +119,21 @@ class Player:
 
     @property
     def total_runs_scored(self) -> int:
-        return sum(
-            shot_runs * times_recorded
-            for shot_runs, times_recorded in enumerate(self.scoring_shots)
-        )
+        return sum(shot_runs * times_recorded for shot_runs, times_recorded in enumerate(self.scoring_shots))
 
     @property
     def strike_rate(self) -> float:
         """
         runs per ball
         """
-        return (
-            AVG_RUNS_PER_BALL
-            if self.balls_faced < 10
-            else self.total_runs_scored / self.balls_faced
-        )
+        return AVG_RUNS_PER_BALL if self.balls_faced < 10 else self.total_runs_scored / self.balls_faced
 
     @property
     def economy(self) -> float:
         """
         runs per ball
         """
-        return (
-            AVG_RUNS_PER_BALL
-            if self.balls_bowled < 12
-            else self.runs_conceded / self.balls_bowled
-        )
+        return AVG_RUNS_PER_BALL if self.balls_bowled < 12 else self.runs_conceded / self.balls_bowled
 
     @property
     def wicket_prob(self) -> float:
@@ -108,9 +150,7 @@ class Player:
 
     @property
     def noball_rate(self) -> float:
-        return (
-            0.0 if self.balls_bowled == 0 else float(self.noballs) / self.balls_bowled
-        )
+        return 0.0 if self.balls_bowled == 0 else float(self.noballs) / self.balls_bowled
 
     def __repr__(self) -> str:
         s = (

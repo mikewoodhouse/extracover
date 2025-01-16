@@ -172,12 +172,17 @@ class DatasetBuilder:
 
     def add_players(self, match_id: int) -> None:
         for row in self.db.query_result(
-            """SELECT player_id, name
-                    FROM players p
-                    JOIN selections s
-                    ON s.player_id = p.ROWID
-                    WHERE s.match_id = :match_id
-                    """,
+            """
+            SELECT
+                  player_id
+                , name
+                , bat_style
+                , bowl_style
+                FROM players p
+                JOIN selections s
+                ON s.player_id = p.ROWID
+                WHERE s.match_id = :match_id
+                """,
             {"match_id": match_id},
         ):
             pid = row["player_id"]
