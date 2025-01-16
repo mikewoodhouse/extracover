@@ -9,6 +9,8 @@ from app.model.classes.ball import Ball
 
 AVG_RUNS_PER_BALL = 1.21
 AVG_WICKET_PROB = 0.054
+MIN_BALLS_FOR_WICKET_PROB: int = 24
+MIN_BALLS_FOR_BATTER_DISMISSAL_PROB: int = 20
 
 
 def empty_list(size: int) -> list[int]:
@@ -25,6 +27,7 @@ class BattingStat:
         self.balls_faced += 1
         if ball.wicket_fell and ball.dismissed == name:
             self.times_out += 1
+        self.runs_scored += ball.batter_runs
 
     @property
     def strike_rate(self) -> float:
@@ -32,7 +35,14 @@ class BattingStat:
 
     @property
     def dismissal_prob(self) -> float:
-        return AVG_WICKET_PROB if self.balls_faced < 10 else float(self.times_out) / self.balls_faced
+        return (
+            AVG_WICKET_PROB
+            if self.balls_faced < MIN_BALLS_FOR_BATTER_DISMISSAL_PROB
+            else float(self.times_out) / self.balls_faced
+        )
+
+    def __repr__(self) -> str:
+        return f"b={self.balls_faced} r={self.runs_scored} ({self.strike_rate:.1f}) w={self.times_out} ({self.dismissal_prob:.2%})"
 
 
 @dataclass
@@ -49,7 +59,7 @@ class BowlingStat:
 
     @property
     def wicket_prob(self) -> float:
-        if self.balls_bowled < 24 or self.wickets_taken < 1:
+        if self.balls_bowled < MIN_BALLS_FOR_WICKET_PROB or self.wickets_taken < 1:
             return AVG_WICKET_PROB
         return float(self.wickets_taken) / self.balls_bowled
 
@@ -59,7 +69,8 @@ class BowlingStat:
             case "bye", "legbye":
                 pass
             case _:
-                self.runs_conceded += ball.batter_runs
+                # TODO: does using extras here have a risk of counting them twice somehow?
+                self.runs_conceded += ball.batter_runs + ball.extra_runs
         if ball.wicket_fell and ball.how_out not in (
             "run out",
             "retired hurt",
@@ -67,6 +78,9 @@ class BowlingStat:
             "retired out",
         ):
             self.wickets_taken += 1
+
+    def __repr__(self) -> str:
+        return f"b={self.balls_bowled} c={self.runs_conceded} ({self.economy:.1f}) w={self.wickets_taken} ({self.wicket_prob:.2%})"
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -102,11 +116,11 @@ class Player:
                 self.noballs += 1
             case _:
                 pass
-        self.bowling_stats[batter.bat_style].add(ball, batter)
+        self.bowling_stats[batter.bat_style or "r"].add(ball, batter)
         self.bowling_stats["all"].add(ball, batter)
 
     def record_ball_faced(self, ball: Ball, bowler: Player) -> None:
-        self.batting_stats[bowler.bowl_style].add(ball, self.name)
+        self.batting_stats[bowler.bowl_style or "rf"].add(ball, self.name)
         self.batting_stats["all"].add(ball, self.name)
         if not ball.wide_noball:
             self.scoring_shots[min(ball.batter_runs, 6)] += 1
@@ -121,12 +135,22 @@ class Player:
         return self.batting_stats[bowl_style].strike_rate
 
     def dismissal_prob(self, bowl_style: str = "all") -> float:
+        vs_all = self.batting_stats["all"].dismissal_prob
+        if bowl_style == "all":
+            return vs_all
+        if self.batting_stats[bowl_style].balls_faced < MIN_BALLS_FOR_BATTER_DISMISSAL_PROB:
+            return vs_all
         return self.batting_stats[bowl_style].dismissal_prob
 
     def economy(self, bat_style: str = "all") -> float:
         return self.bowling_stats[bat_style].economy
 
     def wicket_prob(self, bat_style: str = "all") -> float:
+        vs_all = self.bowling_stats["all"].wicket_prob
+        if bat_style == "all":
+            return vs_all
+        if self.bowling_stats[bat_style].balls_bowled < MIN_BALLS_FOR_WICKET_PROB:
+            return vs_all
         return self.bowling_stats[bat_style].wicket_prob
 
     def balls_bowled(self, bat_style: str = "all") -> int:

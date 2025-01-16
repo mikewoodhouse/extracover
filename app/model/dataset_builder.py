@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date
+from itertools import product
 from pathlib import Path
 
 from dataclass_csv import DataclassWriter
@@ -59,8 +60,10 @@ class MLRow:
     batter_in_first_10: int
     batter_strike_rate: float
     batter_dismissal_prob: float
+    batter_dismissal_vs_style: float
     bowler_economy: float
     bowler_wicket_prob: float
+    bowler_wicket_vs_style: float
     bowler_wide_noball_rate: float
     # output - what actually happened
     outcome: int
@@ -106,8 +109,10 @@ class MLRow:
             batter_in_first_10=int(state.balls_faced[batter.player_id] <= 10),
             batter_strike_rate=batter.strike_rate(),
             batter_dismissal_prob=batter.dismissal_prob(),
+            batter_dismissal_vs_style=batter.dismissal_prob(bowler.bowl_style),
             bowler_economy=bowler.economy(),
             bowler_wicket_prob=bowler.wicket_prob(),
+            bowler_wicket_vs_style=bowler.wicket_prob(batter.bat_style),
             bowler_wide_noball_rate=(
                 AVG_WIDE_NOBALL_RATE if bowl_stat.balls_bowled < 24 else bowler.wide_rate + bowler.noball_rate
             ),
@@ -152,6 +157,23 @@ class DatasetBuilder:
                 print(f"writing {len(self.ml_rows)} ML rows")
                 dataclass_writer.write()
         print(f"{self.outside_normal_req_rates=}")
+        for p in self.players.values():
+            wkt_probs = {k: s.dismissal_prob for k, s in p.batting_stats.items()}
+            bat_max_diff = (
+                max(abs(a - b) for a, b in product(wkt_probs.values(), wkt_probs.values())) if wkt_probs else 0
+            )
+            wkt_probs = {k: s.wicket_prob for k, s in p.bowling_stats.items()}
+            bowl_max_diff = (
+                max(abs(a - b) for a, b in product(wkt_probs.values(), wkt_probs.values())) if wkt_probs else 0
+            )
+            if bat_max_diff > 0.02 or bowl_max_diff > 0.02:
+                print(
+                    p.name,
+                    "BAT:",
+                    ", ".join(f"{k}:{v}" for k, v in p.batting_stats.items()),
+                    "BOWL:",
+                    ", ".join(f"{k}:{v}" for k, v in p.bowling_stats.items()),
+                )
 
     def process_match(self, match: Match) -> None:
         match_id, start_date = match.match_id, match.start_date
