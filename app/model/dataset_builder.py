@@ -58,6 +58,7 @@ class MLRow:
     req_rate: float  # what value when first innings?
     batter_in_first_10: int
     batter_strike_rate: float
+    batter_dismissal_prob: float
     bowler_economy: float
     bowler_wicket_prob: float
     bowler_wide_noball_rate: float
@@ -103,9 +104,10 @@ class MLRow:
             run_rate=state.run_rate,
             req_rate=state.req_rate,
             batter_in_first_10=int(state.balls_faced[batter.player_id] <= 10),
-            batter_strike_rate=batter.strike_rate,
-            bowler_economy=bowl_stat.economy,
-            bowler_wicket_prob=bowl_stat.wicket_prob,
+            batter_strike_rate=batter.strike_rate(),
+            batter_dismissal_prob=batter.dismissal_prob(),
+            bowler_economy=bowler.economy(),
+            bowler_wicket_prob=bowler.wicket_prob(),
             bowler_wide_noball_rate=(
                 AVG_WIDE_NOBALL_RATE if bowl_stat.balls_bowled < 24 else bowler.wide_rate + bowler.noball_rate
             ),

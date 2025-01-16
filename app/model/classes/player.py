@@ -21,6 +21,19 @@ class BattingStat:
     times_out: int = 0
     runs_scored: int = 0
 
+    def add(self, ball: Ball, name: str) -> None:
+        self.balls_faced += 1
+        if ball.wicket_fell and ball.dismissed == name:
+            self.times_out += 1
+
+    @property
+    def strike_rate(self) -> float:
+        return AVG_RUNS_PER_BALL if self.balls_faced < 10 else float(self.runs_scored) / self.balls_faced
+
+    @property
+    def dismissal_prob(self) -> float:
+        return AVG_WICKET_PROB if self.balls_faced < 10 else float(self.times_out) / self.balls_faced
+
 
 @dataclass
 class BowlingStat:
@@ -64,17 +77,11 @@ class Player:
     bat_style: str = ""
     bowl_style: str = ""
     matches: int = 0
-    # following are totals over *all* matches
     batting_positions: list[int] = field(default_factory=lambda: empty_list(11))
-    balls_faced: int = 0
-    times_out: int = 0
     scoring_shots: list[int] = field(default_factory=lambda: empty_list(7))
     overs_bowled: list[int] = field(default_factory=lambda: empty_list(20))
-    # balls_bowled: int = 0
     noballs: int = 0
     wides: int = 0
-    # runs_conceded: int = 0
-    # wickets_taken: int = 0
 
     bowling_stats: dict[str, BowlingStat] = field(default_factory=lambda: defaultdict(BowlingStat))
     batting_stats: dict[str, BattingStat] = field(default_factory=lambda: defaultdict(BattingStat))
@@ -99,59 +106,49 @@ class Player:
         self.bowling_stats["all"].add(ball, batter)
 
     def record_ball_faced(self, ball: Ball, bowler: Player) -> None:
-        self.balls_faced += 1
-        if ball.wicket_fell and ball.dismissed == self.name:
-            self.times_out += 1
-        elif not ball.wide_noball:
+        self.batting_stats[bowler.bowl_style].add(ball, self.name)
+        self.batting_stats["all"].add(ball, self.name)
+        if not ball.wide_noball:
             self.scoring_shots[min(ball.batter_runs, 6)] += 1
 
-    @property
-    def total_runs_scored(self) -> int:
-        return sum(shot_runs * times_recorded for shot_runs, times_recorded in enumerate(self.scoring_shots))
+    def runs_scored(self, bowl_style: str = "all") -> int:
+        return self.batting_stats[bowl_style].runs_scored
 
-    @property
-    def strike_rate(self) -> float:
-        """
-        runs per ball
-        """
-        return AVG_RUNS_PER_BALL if self.balls_faced < 10 else self.total_runs_scored / self.balls_faced
+    def balls_faced(self, bowl_style: str = "all") -> int:
+        return self.batting_stats[bowl_style].balls_faced
 
-    @property
+    def strike_rate(self, bowl_style: str = "all") -> float:
+        return self.batting_stats[bowl_style].strike_rate
+
+    def dismissal_prob(self, bowl_style: str = "all") -> float:
+        return self.batting_stats[bowl_style].dismissal_prob
+
     def economy(self, bat_style: str = "all") -> float:
-        """
-        runs per ball
-        """
         return self.bowling_stats[bat_style].economy
 
-    @property
     def wicket_prob(self, bat_style: str = "all") -> float:
-        """ "
-        per ball
-        """
         return self.bowling_stats[bat_style].wicket_prob
 
-    @property
-    def balls_bowled(self) -> int:
-        return self.bowling_stats["all"].balls_bowled
+    def balls_bowled(self, bat_style: str = "all") -> int:
+        return self.bowling_stats[bat_style].balls_bowled
 
-    @property
-    def runs_conceded(self) -> int:
-        return self.bowling_stats["all"].runs_conceded
+    def runs_conceded(self, bat_style: str = "all") -> int:
+        return self.bowling_stats[bat_style].runs_conceded
 
     @property
     def wide_rate(self) -> float:
-        return 0.0 if self.balls_bowled == 0 else float(self.wides) / self.balls_bowled
+        return 0.0 if self.balls_bowled == 0 else float(self.wides) / self.balls_bowled()
 
     @property
     def noball_rate(self) -> float:
-        return 0.0 if self.balls_bowled == 0 else float(self.noballs) / self.balls_bowled
+        return 0.0 if self.balls_bowled == 0 else float(self.noballs) / self.balls_bowled()
 
     def __repr__(self) -> str:
         s = (
             f"{self.name=} {self.player_id=} {self.matches} apps,"
             f" bat:{self.bat_style} bowl:{self.bowl_style}"
-            f" {self.total_runs_scored=} off {self.balls_faced=} {self.strike_rate=:0.2f}"
-            f" {self.runs_conceded=} from {self.balls_bowled=} {self.economy=:0.2f}"
+            f" {self.runs_scored=} off {self.balls_faced()=} {self.strike_rate()=:0.2f}"
+            f" {self.runs_conceded()=} from {self.balls_bowled()=} {self.economy()=:0.2f}"
             f" w: {self.wide_rate:0.2f} nb: {self.noball_rate:0.2f}"
         )
         return s.replace("self.", "")
