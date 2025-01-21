@@ -70,32 +70,6 @@ class MLRow:
 
     @classmethod
     def build(cls, ball: Ball, state: MatchState, batter: Player, bowler: Player) -> MLRow:
-        outcome = -1
-        if ball.extra_type == "wide":
-            outcome = 0
-        elif ball.extra_type == "noball":
-            outcome = 1
-        elif ball.extra_type == "bye":
-            outcome = 2
-        elif ball.extra_type == "legbye":
-            outcome = 3
-        elif ball.wicket_fell:
-            outcome = 4
-        elif ball.batter_runs == 0:
-            outcome = 5
-        elif ball.batter_runs == 1:
-            outcome = 6
-        elif ball.batter_runs == 2:
-            outcome = 7
-        elif ball.batter_runs == 3:
-            outcome = 8
-        elif ball.batter_runs == 4:
-            outcome = 9
-        elif ball.batter_runs > 4:
-            outcome = 10
-        else:
-            print(ball)
-            outcome = -1
         bowl_stat = bowler.bowling_stats["all"]
         return MLRow(
             match_number=state.match_number,
@@ -116,7 +90,7 @@ class MLRow:
             bowler_wide_noball_rate=(
                 AVG_WIDE_NOBALL_RATE if bowl_stat.balls_bowled < 24 else bowler.wide_rate + bowler.noball_rate
             ),
-            outcome=outcome,
+            outcome=ball.outcome,
         )
 
     @staticmethod
