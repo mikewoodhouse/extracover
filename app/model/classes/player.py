@@ -31,13 +31,17 @@ class BattingStat:
 
     @property
     def strike_rate(self) -> float:
-        return AVG_RUNS_PER_BALL if self.balls_faced < 10 else float(self.runs_scored) / self.balls_faced
+        return (
+            AVG_RUNS_PER_BALL
+            if self.balls_faced < 10 or self.runs_scored == 0
+            else float(self.runs_scored) / self.balls_faced
+        )
 
     @property
     def dismissal_prob(self) -> float:
         return (
             AVG_WICKET_PROB
-            if self.balls_faced < MIN_BALLS_FOR_BATTER_DISMISSAL_PROB
+            if self.balls_faced < MIN_BALLS_FOR_BATTER_DISMISSAL_PROB or self.times_out == 0
             else float(self.times_out) / self.balls_faced
         )
 
