@@ -4,13 +4,13 @@ from app.ingest.classes import Extras
 
 
 @pytest.mark.parametrize(
-    "noballs,wides,byes,legbyes,expected_type",
+    "noballs,wides,byes,legbyes,penalty,expected_type",
     [
         (1, 0, 0, 0, 0, "noball"),
         (0, 1, 0, 0, 0, "wide"),
         (0, 0, 1, 0, 0, "bye"),
         (0, 0, 0, 1, 0, "legbye"),
-        (0, 0, 0, 1, 1, "penalty"),
+        (0, 0, 0, 0, 1, "penalty"),
         (0, 0, 0, 0, 0, ""),
     ],
 )

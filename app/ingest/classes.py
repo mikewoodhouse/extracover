@@ -119,7 +119,7 @@ class Extras:
             res = next(field.name for field in fields(Extras) if self.__dict__[field.name] > 0)
         except StopIteration:
             return ""
-        return res[:-1] if res else ""
+        return res[:-1] if res.endswith("s") else res if res else ""
 
 
 @dataclass_json
