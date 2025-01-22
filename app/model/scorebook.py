@@ -59,6 +59,7 @@ class Ball:
     noball: bool = False
     bye: bool = False
     legbye: bool = False
+    penalty: bool = False
 
     @property
     def is_extra(self) -> bool:
@@ -76,6 +77,8 @@ class Ball:
         extra_type = "wide" if self.wide else ""
         extra_type = "noball" if self.noball else ""
         extra_type = "bye" if self.bye else ""
+        extra_type = "legbye" if self.legbye else ""
+        extra_type = "penalty" if self.penalty else ""
 
         return (
             f"{self.striker_name}: {self.batter_runs}+{self.extra_runs}"

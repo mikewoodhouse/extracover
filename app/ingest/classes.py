@@ -55,9 +55,7 @@ class Registry:
 @dataclass_json
 @dataclass
 class Info:
-    dates: list[date] = field(
-        metadata=config(decoder=date_list_decoder), default_factory=list
-    )
+    dates: list[date] = field(metadata=config(decoder=date_list_decoder), default_factory=list)
     balls_per_over: int = 0
     gender: str = ""
     match_type: str = ""
@@ -100,9 +98,9 @@ class Info:
             for team, team_list in self.players.items()
             for player in team_list
         ]
-        assert len(selections) == sum(
-            len(team_list) for team_list in self.players.values()
-        ), "mismatch between player lists and registry"
+        assert len(selections) == sum(len(team_list) for team_list in self.players.values()), (
+            "mismatch between player lists and registry"
+        )
         return selections
 
 
@@ -113,13 +111,12 @@ class Extras:
     wides: int = 0
     legbyes: int = 0
     byes: int = 0
+    penalty: int = 0
 
     @property
     def extra_type(self) -> str:
         try:
-            res = next(
-                field.name for field in fields(Extras) if self.__dict__[field.name] > 0
-            )
+            res = next(field.name for field in fields(Extras) if self.__dict__[field.name] > 0)
         except StopIteration:
             return ""
         return res[:-1] if res else ""
@@ -186,9 +183,7 @@ class Delivery(DataClassJsonMixin):
 @dataclass
 class Over:
     over: int
-    deliveries: list[Delivery] = field(
-        default_factory=list, metadata=config(field_name="deliveries")
-    )
+    deliveries: list[Delivery] = field(default_factory=list, metadata=config(field_name="deliveries"))
 
     def __post_init__(self) -> None:
         legal_ball_seq = 0
