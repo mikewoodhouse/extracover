@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
+from dataclasses_json import Undefined, dataclass_json
+
 from app.model.batting_order_generator import BattingOrderGenerator
 from app.model.bowling_order_generator import BowlingOrderGenerator
 
@@ -62,6 +64,7 @@ class Match:
         }
 
 
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Ball:
     striker_name: str = ""
@@ -72,11 +75,16 @@ class Ball:
     wicket_fell: bool = False
     striker_out: bool = True
     # TODO: would an "ExtraType" Enum be better?
+    extra_type: str = ""
     wide: bool = False
     noball: bool = False
     bye: bool = False
     legbye: bool = False
     penalty: bool = False
+
+    def __post_init__(self):
+        self.batter_runs = int(self.batter_runs)
+        self.extra_runs = int(self.extra_runs)
 
     @property
     def is_extra(self) -> bool:
@@ -91,16 +99,10 @@ class Ball:
         return self.batter_runs + self.extra_runs
 
     def __str__(self) -> str:
-        extra_type = "wide" if self.wide else ""
-        extra_type = "noball" if self.noball else ""
-        extra_type = "bye" if self.bye else ""
-        extra_type = "legbye" if self.legbye else ""
-        extra_type = "penalty" if self.penalty else ""
-
         return (
             f"{self.striker_name}: {self.batter_runs}+{self.extra_runs}"
             f"{' *out* ' if self.wicket_fell else ' '}"
-            f"{extra_type}"
+            f"{self.extra_type}"
         )
 
     @classmethod

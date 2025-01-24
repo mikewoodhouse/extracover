@@ -69,7 +69,10 @@ ALL_BALLS = RUN_BALLS | WIDE_BALLS | NOBALL_BALLS_WITH_RUNS | NOBALL_BALLS_WITH_
 
 
 def update_book(sender) -> None:
-    book.update(ALL_BALLS[sender.text])
+    print(sender.props)
+    ball = Ball(**sender.props)
+    print(ball)
+    book.update(ball)
 
 
 with ui.row():
@@ -79,23 +82,33 @@ with ui.row():
                 ui.label("Runs")
                 for i in BALLS:
                     ui.button(text=str(i), on_click=lambda e: update_book(e.sender)).style("height: 70px;").props(
-                        "color=black"
+                        f"color=black batter_runs={i}"
                     )
                 ui.label("Wides")
                 for i in BALLS:
-                    ui.button(text=f"w+{i}", on_click=lambda e: update_book(e.sender)).props("color=red")
+                    ui.button(text=f"w:{i + 1}", on_click=lambda e: update_book(e.sender)).props(
+                        f"color=red extra_runs={i + 1} extra_type=wide"
+                    )
                 ui.label("NB(runs)")
                 for i in BALLS:
-                    ui.button(text=f"nb+{i}", on_click=lambda e: update_book(e.sender)).props("color=maroon")
+                    ui.button(text=f"nb+{i}", on_click=lambda e: update_book(e.sender)).props(
+                        f"color=maroon batter_runs={i} extra_runs=1 extra_type=noball"
+                    )
                 ui.label("NB(byes)")
                 for i in BALLS:
-                    ui.button(text=f"nbb+{i}", on_click=lambda e: update_book(e.sender)).props("color=brown")
+                    ui.button(text=f"nb+{i}b", on_click=lambda e: update_book(e.sender)).props(
+                        f"color=brown extra_runs={i + 1} extra_type=noball"
+                    )
                 ui.label("Byes")
                 for i in BALLS:
-                    ui.button(text=f"{i} b", on_click=lambda e: update_book(e.sender)).props("color=green")
+                    ui.button(text=f"{i + 1} b", on_click=lambda e: update_book(e.sender)).props(
+                        f"color=green extra_runs={i + 1} extra_type=bye"
+                    )
                 ui.label("Legbyes")
                 for i in BALLS:
-                    ui.button(text=f"{i} lb", on_click=lambda e: update_book(e.sender)).props("color=cyan")
+                    ui.button(text=f"{i + 1} lb", on_click=lambda e: update_book(e.sender)).props(
+                        f"color=cyan extra_runs={i + 1} extra_type=legbye"
+                    )
                 ui.label("Out!")
                 ui.button(text="b/c/lbw", on_click=lambda: book.update(Ball(wicket_fell=True))).props("color=black")
                 ui.button(text="RO+1", on_click=lambda: book.update(Ball(wicket_fell=True, batter_runs=1))).props(
