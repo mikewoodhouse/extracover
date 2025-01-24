@@ -14,6 +14,23 @@ class Player:
     runs_scored: int = 0
     overs: int = 0
     runs_conceded: int = 0
+    balls_faced: int = 0
+    striker: bool = False
+    non_striker: bool = False
+    is_out: bool = False
+
+    def out(self) -> None:
+        self.is_out = True
+        self.striker = False
+        self.non_striker = False
+
+    @property
+    def batting_html(self) -> str:
+        return (
+            f"""<div style='display: flex; justify-content: space-between; width: 180px;'>"""
+            f"""<div>{"*" if self.striker else ""}{"<b>" if self.striker or self.non_striker else ""}{self.name}</b></div>"""
+            f"""<div>{self.runs_scored} ({self.balls_faced})</div>"""
+        )
 
 
 @dataclass
@@ -105,6 +122,12 @@ class InningsCard:
     striker_index: int = 0
     non_striker_index: int = 1
     next_man_in: int = 2
+    fours: int = 0
+    sixes: int = 0
+
+    def __post_init__(self) -> None:
+        self.batters[0].striker = True
+        self.batters[1].non_striker = True
 
     @property
     def closed(self) -> bool:
@@ -123,14 +146,34 @@ class InningsCard:
             self.non_striker_index,
             self.striker_index,
         )
+        self.batters[self.striker_index].striker = True
+        self.batters[self.striker_index].non_striker = False
+        self.batters[self.non_striker_index].non_striker = True
+        self.batters[self.non_striker_index].striker = False
 
     def update(self, ball: Ball) -> None:
         self.total += ball.batter_runs + ball.extra_runs
         self.striker.runs_scored += ball.batter_runs
+        self.striker.balls_faced += 1
+
+        if ball.batter_runs == 4:
+            self.fours += 1
+
+        if ball.batter_runs == 6:
+            self.sixes += 1
+
         if ball.wicket_fell:
             self.wickets += 1
+            if ball.striker_out:
+                self.batters[self.striker_index].out()
+                # TODO: at which end is the next man coming in?
+            else:
+                self.batters[self.non_striker_index].out()
+                # TODO: at which end is the next man coming in?
             self.striker_index = self.next_man_in
+            self.batters[self.striker_index].striker = True
             self.next_man_in += 1
+
         if ball.batter_runs in (1, 3):
             self.batsmen_change_ends()
         if ball.extra_runs in (2, 4):
@@ -139,6 +182,24 @@ class InningsCard:
             self.balls_bowled += 1
             if self.balls_bowled % 6 == 0:
                 self.batsmen_change_ends()
+
+    @property
+    def score(self) -> str:
+        return f"{self.total} - {self.wickets}"
+
+    @property
+    def rates(self) -> str:
+        return f"ovs: {self.balls_bowled // 6}.{self.balls_bowled % 6} rr: {self.rpo:.2f}"
+
+    @property
+    def rpo(self) -> float:
+        if self.balls_bowled == 0:
+            return 0
+        return self.total / self.balls_bowled * 6
+
+    @property
+    def boundaries(self) -> str:
+        return f"{self.fours}x4 {self.sixes}x6"
 
 
 @dataclass
