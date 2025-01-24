@@ -6,6 +6,7 @@ __pycache__
 *.zip*
 matches
 venv*
+.venv
 data
 .coverage
 .pytest_cache
