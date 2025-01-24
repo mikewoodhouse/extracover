@@ -1,7 +1,7 @@
 import pytest
 
 from app.model.predicto import Predicto
-from app.model.scorebook import InningsCard, Match, Scorebook
+from app.model.scorebook import InningsCard, Match, Player, Scorebook
 
 """
 # Setting up the model
@@ -27,11 +27,11 @@ def fake_match() -> Match:
 
 
 def fake_first_innings() -> InningsCard:
-    return InningsCard()
+    return InningsCard(batters=[Player(name=f"{i:02d}-Batter") for i in range(11)])
 
 
 def fake_second_innings() -> InningsCard:
-    return InningsCard(batters=[])
+    return InningsCard(batters=[Player(name=f"{i:02d}-Batter") for i in range(11)])
 
 
 @pytest.fixture
