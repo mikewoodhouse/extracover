@@ -111,18 +111,20 @@ def run_match_logger():
                             f"color=cyan extra_runs={i + 1} extra_type=legbye"
                         )
                     ui.label("Out!")
-                    ui.button(text="b/c/lbw", on_click=lambda: book.update(Ball(wicket_fell=True))).props("color=black")
+                    ui.button(text="B/C/LB/St", on_click=lambda e: update_book(e.sender)).props(
+                        "color=black wicket_fell=true how_out=bowled"
+                    )
                     ui.button(text="RO+1", on_click=lambda: book.update(Ball(wicket_fell=True, batter_runs=1))).props(
-                        "color=black"
+                        "color=black how_out=runout"
                     )
                     ui.button(text="RO+2", on_click=lambda: book.update(Ball(wicket_fell=True, batter_runs=2))).props(
-                        "color=black"
+                        "color=black how_out=runout"
                     )
                     ui.button(text="RO+1b", on_click=lambda: book.update(Ball(wicket_fell=True, extra_runs=1))).props(
-                        "color=black"
+                        "color=black how_out=runout"
                     )
                     ui.button(text="RO+2b", on_click=lambda: book.update(Ball(wicket_fell=True, extra_runs=2))).props(
-                        "color=black"
+                        "color=black how_out=runout"
                     )
                     ui.skeleton()  # placeholder
                     ui.label("Other")
@@ -131,25 +133,24 @@ def run_match_logger():
                     ui.button("-1")
                     # some kind of general ball-defining form here? FOr cases not handled above?
         with ui.column():
-            with ui.card():
-                ui.label(str(book.first_innings.score)).style("font-size: 5em;").bind_text_from(
-                    book.first_innings, "score"
+            with ui.card().tight():
+                ui.label(str(book.current_innings.score)).style("font-size: 5em;").bind_text_from(
+                    book.current_innings, "score"
                 )
-                ui.label(str(book.first_innings.rates)).style("font-size: 1em;").bind_text_from(
-                    book.first_innings, "rates"
+                ui.label(str(book.current_innings.rates)).style("font-size: 1em;").bind_text_from(
+                    book.current_innings, "rates"
                 )
-                ui.label(str(book.first_innings.boundaries)).style("font-size: 1em;").bind_text_from(
-                    book.first_innings, "boundaries"
+                ui.label(str(book.current_innings.boundaries)).style("font-size: 1em;").bind_text_from(
+                    book.current_innings, "boundaries"
                 )
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[0].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[1].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[2].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[3].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[4].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[5].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[6].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[7].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[8].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[9].batting_html))
-                ui.html("").bind_content_from(book.first_innings, "batters", backward=lambda x: str(x[10].batting_html))
+                for i, _ in enumerate(book.current_innings.batters):
+                    ui.html().bind_content_from(
+                        book.current_innings, f"batter_{i}", backward=lambda x: x().batting_html
+                    )
+                ui.skeleton()
+                for i, _ in enumerate(book.current_innings.bowlers):
+                    ui.html().bind_content_from(
+                        book.current_innings, f"bowler_{i}", backward=lambda x: x().bowling_html
+                    )
+
     ui.run()

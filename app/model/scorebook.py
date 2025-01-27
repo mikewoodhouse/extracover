@@ -15,16 +15,31 @@ class Player:
     name: str = ""
     runs_scored: int = 0
     overs: int = 0
-    runs_conceded: int = 0
     balls_faced: int = 0
     striker: bool = False
     non_striker: bool = False
+    is_bowler: bool = False
     is_out: bool = False
+    balls_bowled: int = 0
+    runs_conceded: int = 0
+    wickets_taken: int = 0
 
     def out(self) -> None:
         self.is_out = True
         self.striker = False
         self.non_striker = False
+
+    def update_bowling(self, ball: Ball) -> None:
+        self.balls_bowled += 1
+        self.runs_conceded += ball.batter_runs + ball.extra_runs
+        if ball.wicket_fell and ball.wicket_credited_to_bowler:
+            self.wickets_taken += 1
+
+    @property
+    def econ(self) -> float:
+        if self.balls_bowled == 0:
+            return 0
+        return self.runs_conceded / self.balls_bowled * 6
 
     @property
     def batting_html(self) -> str:
@@ -32,6 +47,14 @@ class Player:
             f"""<div style='display: flex; justify-content: space-between; width: 180px;'>"""
             f"""<div>{"*" if self.striker else ""}{"<b>" if self.striker or self.non_striker else ""}{self.name}</b></div>"""
             f"""<div>{self.runs_scored} ({self.balls_faced})</div>"""
+        )
+
+    @property
+    def bowling_html(self) -> str:
+        return (
+            f"""<div style='display: flex; justify-content: space-between; width: 180px;'>"""
+            f"""<div>{"<b>" if self.is_bowler else ""}{self.name}</b></div>"""
+            f"""<div>{self.wickets_taken}-{self.runs_conceded} ({self.balls_bowled}, {self.econ:4.1f})</div>"""
         )
 
 
@@ -74,6 +97,7 @@ class Ball:
     extra_runs: int = 0
     wicket_fell: bool = False
     striker_out: bool = True
+    how_out: str = ""
     # TODO: would an "ExtraType" Enum be better?
     extra_type: str = ""
     wide: bool = False
@@ -85,6 +109,10 @@ class Ball:
     def __post_init__(self):
         self.batter_runs = int(self.batter_runs)
         self.extra_runs = int(self.extra_runs)
+
+    @property
+    def wicket_credited_to_bowler(self) -> bool:
+        return self.how_out == "bowled"
 
     @property
     def is_extra(self) -> bool:
@@ -123,6 +151,7 @@ class InningsCard:
     balls_bowled: int = 0
     striker_index: int = 0
     non_striker_index: int = 1
+    bowler_index: int = 0
     next_man_in: int = 2
     fours: int = 0
     sixes: int = 0
@@ -130,6 +159,23 @@ class InningsCard:
     def __post_init__(self) -> None:
         self.batters[0].striker = True
         self.batters[1].non_striker = True
+        for i, _ in enumerate(self.batters):
+            setattr(self, f"batter_{i}", self.make_batter_lookup_func(i))
+
+        for i, _ in enumerate(self.bowlers):
+            setattr(self, f"bowler_{i}", self.make_bowler_lookup_func(i))
+
+    def make_batter_lookup_func(self, index: int):
+        def batter_lookup() -> Player:
+            return self.batters[index]
+
+        return batter_lookup
+
+    def make_bowler_lookup_func(self, index: int):
+        def bowler_lookup() -> Player:
+            return self.bowlers[index]
+
+        return bowler_lookup
 
     @property
     def closed(self) -> bool:
@@ -154,6 +200,10 @@ class InningsCard:
         self.batters[self.non_striker_index].striker = False
 
     def update(self, ball: Ball) -> None:
+        bowler = self.bowlers[self.bowler_index]
+        bowler.is_bowler = True
+        bowler.update_bowling(ball)
+
         self.total += ball.batter_runs + ball.extra_runs
         self.striker.runs_scored += ball.batter_runs
         self.striker.balls_faced += 1
