@@ -59,7 +59,7 @@ OUTCOME_DESCS = [
     "wide",
     "noball",
     "bye",
-    "lebbye",
+    "legbye",
     "wicket",
     "dot",
     "single",
@@ -210,6 +210,11 @@ class Clusterer:
                 )
 
     def display_cluster_prob_tables(self, minimum_entries: int = 0):
+        for inns in range(2):
+            for over in range(20):
+                self.display_innings_over_cluster_probs(inns, over, minimum_entries)
+
+    def display_innings_over_cluster_probs(self, inns: int, over: int, minimum_entries: int = 0) -> None:
         def title(inns, over) -> str:
             return f"## Innings {inns}, Over {over}"
 
@@ -229,21 +234,47 @@ class Clusterer:
                 + " |"
             )
 
-        for inns in range(2):
-            for over in range(20):
-                clf = self.clfs[inns][over]
-                Xt = extract_values(self.train_dfs[inns][over], X_values)
-                yt = extract_values(self.train_dfs[inns][over], y_values)
-                scaled_Xt = SCALER_CLASSES["normalizer"].fit(Xt).transform(Xt)
-                clf.fit(scaled_Xt)
-                labels = clf.labels_
-                outcomes = yt["outcome"]
-                outcomes.reset_index(drop=True, inplace=True)
+        clf = self.clfs[inns][over]
+        Xt = extract_values(self.train_dfs[inns][over], X_values)
+        yt = extract_values(self.train_dfs[inns][over], y_values)
+        scaled_Xt = SCALER_CLASSES["normalizer"].fit(Xt).transform(Xt)
+        clf.fit(scaled_Xt)
+        labels = clf.labels_
+        outcomes = yt["outcome"]
+        outcomes.reset_index(drop=True, inplace=True)
 
-                res = {k: defaultdict(int) for k in np.unique(labels)}
-                for i, label in enumerate(labels):
-                    res[label][outcomes[i]] += 1
+        res = {k: defaultdict(int) for k in np.unique(labels)}
+        for i, label in enumerate(labels):
+            res[label][outcomes[i]] += 1
 
-                body_lines = "\n".join(table_line(k, v) for k, v in res.items() if sum(v.values()) > minimum_entries)
+        body_lines = "\n".join(table_line(k, v) for k, v in res.items() if sum(v.values()) > minimum_entries)
 
-                display(Markdown(title(inns, over) + "\n" + table_hdr() + "\n" + body_lines))
+        display(Markdown(title(inns, over) + "\n" + table_hdr() + "\n" + body_lines))
+
+    def print_cluster_probs(self, inns: int, over: int, minimum_entries: int = 0) -> None:
+        def title(inns, over) -> str:
+            return f"## Innings {inns}, Over {over}"
+
+        def table_hdr() -> str:
+            return " ".join(f"{i:>8}" for i in OUTCOME_DESCS)
+
+        def table_line(k, v) -> str:
+            tot = sum(v.values())
+            return f"{k:>8d} {tot:>8d} " + " ".join(f"{v[i] / tot:8.2%}" for i in range(np.unique(outcomes).shape[0]))
+
+        clf = self.clfs[inns][over]
+        Xt = extract_values(self.train_dfs[inns][over], X_values)
+        yt = extract_values(self.train_dfs[inns][over], y_values)
+        scaled_Xt = SCALER_CLASSES["normalizer"].fit(Xt).transform(Xt)
+        clf.fit(scaled_Xt)
+        labels = clf.labels_
+        outcomes = yt["outcome"]
+        outcomes.reset_index(drop=True, inplace=True)
+
+        res = {k: defaultdict(int) for k in np.unique(labels)}
+        for i, label in enumerate(labels):
+            res[label][outcomes[i]] += 1
+
+        body_lines = "\n".join(table_line(k, v) for k, v in res.items() if sum(v.values()) > minimum_entries)
+
+        print(title(inns, over) + "\n" + table_hdr() + "\n" + body_lines)
