@@ -18,3 +18,4 @@ player_json/*.json
 .mypy_cache
 logs
 *.log
+.nicegui
