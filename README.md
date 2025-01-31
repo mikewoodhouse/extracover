@@ -1,5 +1,9 @@
 # extracover
 
+## IMPORTANT
+
+Check that the UI runs - at present `fastapi 0.115.7` causes a problem, so downgrade using `uv pip install "fastapi==0.115.6"`
+
 ## Purpose
 
 (if anyone happens upon this...)
