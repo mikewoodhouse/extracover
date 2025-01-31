@@ -127,11 +127,18 @@ def run_match_logger():
                         "color=black how_out=runout"
                     )
                     ui.skeleton()  # placeholder
-                    ui.label("Other")
+                    ui.label("Other/Fix:")
+                    ui.button("Over")
                     ui.button("Chg Ends")
                     ui.button("+1")
                     ui.button("-1")
                     # some kind of general ball-defining form here? FOr cases not handled above?
+                with ui.card():
+                    with ui.row():
+                        ui.label("Select bowler for next ball/over")
+                        ui.select(
+                            [p.name for p in book.current_innings.bowlers if not p.is_bowler],
+                        )
         with ui.column():
             with ui.card().tight():
                 ui.label(str(book.current_innings.score)).style("font-size: 5em;").bind_text_from(
@@ -143,11 +150,12 @@ def run_match_logger():
                 ui.label(str(book.current_innings.boundaries)).style("font-size: 1em;").bind_text_from(
                     book.current_innings, "boundaries"
                 )
+            with ui.card().tight():
                 for i, _ in enumerate(book.current_innings.batters):
                     ui.html().bind_content_from(
                         book.current_innings, f"batter_{i}", backward=lambda x: x().batting_html
                     )
-                ui.skeleton()
+            with ui.card().tight():
                 for i, _ in enumerate(book.current_innings.bowlers):
                     ui.html().bind_content_from(
                         book.current_innings, f"bowler_{i}", backward=lambda x: x().bowling_html
