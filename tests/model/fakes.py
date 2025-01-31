@@ -6,7 +6,10 @@ def fake_player(name: str = "") -> Player:
 
 
 def fake_innings() -> InningsCard:
-    return InningsCard(batters=[fake_player(name=f"P{str(_)}") for _ in range(11)])
+    return InningsCard(
+        batters=[fake_player(name=f"P{str(_)}") for _ in range(11)],
+        bowlers=[fake_player(name=f"P{str(_)}") for _ in range(5)],
+    )
 
 
 def fake_book() -> Scorebook:

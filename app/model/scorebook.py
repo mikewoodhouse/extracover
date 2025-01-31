@@ -29,6 +29,10 @@ class Player:
         self.striker = False
         self.non_striker = False
 
+    def update_batting(self, ball: Ball) -> None:
+        self.runs_scored += ball.batter_runs
+        self.balls_faced += 1
+
     def update_bowling(self, ball: Ball) -> None:
         self.balls_bowled += 1
         self.runs_conceded += ball.batter_runs + ball.extra_runs
@@ -202,11 +206,11 @@ class InningsCard:
     def update(self, ball: Ball) -> None:
         bowler = self.bowlers[self.bowler_index]
         bowler.is_bowler = True
+
         bowler.update_bowling(ball)
+        self.striker.update_batting(ball)
 
         self.total += ball.batter_runs + ball.extra_runs
-        self.striker.runs_scored += ball.batter_runs
-        self.striker.balls_faced += 1
 
         if ball.batter_runs == 4:
             self.fours += 1
@@ -234,6 +238,7 @@ class InningsCard:
             self.balls_bowled += 1
             if self.balls_bowled % 6 == 0:
                 self.batsmen_change_ends()
+                # TODO: change bowler
 
     @property
     def score(self) -> str:
