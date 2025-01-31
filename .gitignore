@@ -7,7 +7,7 @@ __pycache__
 matches
 venv*
 .venv
-data
+/data
 .coverage
 .pytest_cache
 *.csv
