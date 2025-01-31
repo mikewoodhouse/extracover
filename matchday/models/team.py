@@ -13,7 +13,14 @@ class Team:
 
     @classmethod
     def all_as_dicts(cls) -> list[dict]:
-        return [dict(row) for row in config.db_connection.execute("SELECT * FROM teams ORDER BY name").fetchall()]
+        return [
+            dict(row)
+            for row in config.db_connection.execute(
+                """
+                SELECT * FROM teams ORDER BY name
+                """
+            ).fetchall()
+        ]
 
     def players_as_dicts(self) -> list[dict]:
         self.players = Player.all_in_team(self.name)

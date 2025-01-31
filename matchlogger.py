@@ -1,5 +1,10 @@
+import sqlite3
+
 from nicegui import app, ui
 
+from matchday.common.db import books_db_path
+from matchday.data import BookRepository
+from matchday.models import Book
 from matchday.views import BookBuilderView, InplayView
 
 """
@@ -14,10 +19,13 @@ def navigation():
     ui.link("Inplay/Logger", inplay_view)
 
 
-@ui.page("/setup")
-def match_view():
+@ui.page("/setup/{book_id}")
+def match_view(book_id: int | None):
+    conn = sqlite3.connect(books_db_path)
+    repo = BookRepository(conn)
+    book: Book = repo.get(book_id)
     app.storage.user.pop("book_id")
-    view = BookBuilderView()
+    view = BookBuilderView(repo, book)
     view.show()
 
 
