@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from matchday.models import Book
-from matchday.viewmodels.book_buider import BookBuilder
+from matchday.viewmodels.book_builder import BookBuilder
 
 
 @pytest.fixture
