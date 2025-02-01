@@ -5,7 +5,7 @@ from nicegui import app, ui
 from matchday.common.db import books_db_path
 from matchday.data import BookRepository
 from matchday.models import Book
-from matchday.views import BookBuilderView, InplayView
+from matchday.views import BookSetupView, InplayView
 
 """
 Are separate pages necessary?
@@ -25,7 +25,7 @@ def match_view(book_id: int | None):
     repo = BookRepository(conn)
     book: Book = repo.get(book_id)
     app.storage.user.pop("book_id")
-    view = BookBuilderView(repo, book)
+    view = BookSetupView(repo, book)
     view.show()
 
 

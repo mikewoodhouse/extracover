@@ -4,7 +4,7 @@ from matchday.models import Book, Team
 
 
 @dataclass
-class BookCreator:
+class BookBuilder:
     book: Book = field(default_factory=Book)
 
     def set_team_name(self, which: str, name: str):

@@ -1,7 +1,7 @@
-from .book_builder import BookBuilderView
+from .book_setup_view import BookSetupView
 from .inplay import InplayView
 
 __all__ = [
     "InplayView",
-    "BookBuilderView",
+    "BookSetupView",
 ]

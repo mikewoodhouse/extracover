@@ -2,12 +2,12 @@ from nicegui import app, ui
 
 from matchday.data import BookRepository
 from matchday.models import Book
-from matchday.viewmodels import BookCreator
+from matchday.viewmodels import BookBuilder
 
 
-class BookBuilderView:
+class BookSetupView:
     def __init__(self, repo: BookRepository, book: Book) -> None:
-        self.builder = BookCreator(book=book)
+        self.builder = BookBuilder(book=book)
         self.repo = repo
 
     def update_team_name(self, field_name: str, label: ui.label, value: str):
