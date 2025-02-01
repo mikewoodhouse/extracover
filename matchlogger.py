@@ -5,6 +5,7 @@ from nicegui import app, ui
 from matchday.common.db import books_db_path
 from matchday.data import BookRepository
 from matchday.models import Book
+from matchday.viewmodels import BookBuilder
 from matchday.views import BookSetupView, InplayView
 
 """
@@ -24,8 +25,9 @@ def match_view(book_id: int | None):
     conn = sqlite3.connect(books_db_path)
     repo = BookRepository(conn)
     book: Book = repo.get(book_id)
+    book_builder = BookBuilder(book=book, repo=repo)
     app.storage.user.pop("book_id")
-    view = BookSetupView(repo, book)
+    view = BookSetupView(book_builder)
     view.show()
 
 

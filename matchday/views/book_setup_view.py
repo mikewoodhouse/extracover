@@ -1,24 +1,19 @@
 from nicegui import app, ui
 
-from matchday.data import BookRepository
-from matchday.models import Book
 from matchday.viewmodels import BookBuilder
 
 
 class BookSetupView:
-    def __init__(self, repo: BookRepository, book: Book) -> None:
-        self.builder = BookBuilder(book=book)
-        self.repo = repo
+    def __init__(self, builder: BookBuilder) -> None:
+        self.builder = builder
 
     def update_team_name(self, field_name: str, label: ui.label, value: str):
         self.builder.set_team_name(field_name, value)
         label.set_text(value)
 
     def create_match(self) -> None:
-        book_id = self.repo.add(self.builder.book)
-        self.builder.book.book_id = book_id  # TODO: ugh - refactor needed -
+        book_id = self.builder.add()
         app.storage.user["book_id"] = book_id
-        print(app.storage.user)
         self.team_list_section.set_visibility(False)
         self.show_player_selectors()
         self.player_lineup_section.set_visibility(True)
