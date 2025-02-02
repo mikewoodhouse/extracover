@@ -40,9 +40,14 @@ class BookSetupView:
 
     def show_player_selectors(self):
         with self.player_lineup_section:
+            with ui.card():
+                ui.button("Start!", on_click=self.switch_to_inplay_view)
             with ui.row():
                 self.player_selector(1)
                 self.player_selector(2)
+
+    def switch_to_inplay_view(self):
+        pass
 
     def player_selector(self, team_number: int) -> None:
         team = self.builder.book.team_1 if team_number == 1 else self.builder.book.team_2

@@ -1,9 +1,11 @@
 from nicegui import ui
 
+from matchday.viewmodels import InplayManager
+
 
 class InplayView:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, manager: InplayManager) -> None:
+        self.manager = manager
 
     def show(self):
         with ui.row():

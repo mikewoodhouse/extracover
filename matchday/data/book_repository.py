@@ -26,10 +26,13 @@ class BookRepository:
         )
         self.conn.commit()
 
-    def get(self, book_id: int | None) -> Book:
+    def get(self, book_id: int) -> Book:
         csr = self.conn.execute(
             "SELECT content FROM books WHERE book_id = :book_id",
             {"book_id": book_id},
         )
         row = csr.fetchone()
-        return Book.from_json(row["content"])
+        if row:
+            return Book.from_json(row["content"])
+
+        return Book()
