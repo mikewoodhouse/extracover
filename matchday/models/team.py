@@ -23,5 +23,10 @@ class Team:
         ]
 
     def players_as_dicts(self) -> list[dict]:
-        self.players = Player.all_in_team(self.name)
-        return [asdict(p) for p in self.players]
+        all_players = Player.all_in_team(self.name)
+        self.players = all_players[:11]
+        return [asdict(p) for p in all_players]
+
+    @property
+    def batters(self) -> dict[int, str]:
+        return {p.player_id: p.name for p in self.players if not p.is_out}

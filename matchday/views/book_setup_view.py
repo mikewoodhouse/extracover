@@ -48,11 +48,11 @@ class BookSetupView:
                 self.player_selector(2)
 
     def switch_to_inplay_view(self):
-        pass
+        self.builder.save()
 
     def player_selector(self, team_number: int) -> None:
         team = self.builder.book.team_1 if team_number == 1 else self.builder.book.team_2
-        player_dicts = team.players_as_dicts()
+        player_dicts = team.players_as_dicts()  # TODO : should come from builder?
         with ui.card():
             ui.label(team.name).style("font-size: 200%")
             with ui.table(
@@ -62,7 +62,7 @@ class BookSetupView:
                 ],
                 rows=player_dicts,
                 selection="multiple",
-                row_key="name",
+                row_key="player_id",
                 on_select=lambda e: print(e.selection, players_table.selected),
             ).props("dense") as players_table:
                 ui.skeleton()

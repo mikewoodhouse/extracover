@@ -8,11 +8,13 @@ from matchday.models import Book, Team
 class BookBuilder:
     book: Book
     repo: BookRepository
-    book_id: int = 0
 
     def add(self) -> int:
-        self.book_id = self.repo.add(self.book)
-        return self.book_id
+        self.book.book_id = self.repo.add(self.book)
+        return self.book.book_id
+
+    def save(self) -> None:
+        self.repo.save(self.book)
 
     def set_team_name(self, which: str, name: str):
         setattr(self.book, which, Team(name=name))

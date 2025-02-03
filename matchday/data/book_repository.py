@@ -8,9 +8,10 @@ class BookRepository:
         self.conn = conn
 
     def add(self, book: Book) -> int:
+        json = book.to_json()
         csr = self.conn.execute(
             "INSERT INTO books (content) VALUES (:json) RETURNING *",
-            {"json": book.to_json()},
+            {"json": json},
         )
         row = csr.fetchone()
         self.conn.commit()

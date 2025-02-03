@@ -15,6 +15,8 @@ class Player:
     first_ball_recd: int = 0
     first_ball_bowled: int = 0
 
+    is_out: bool = False
+
     @staticmethod
     def all_in_team(name: str) -> list[Player]:
         with config.db_connection as conn:

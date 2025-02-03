@@ -14,19 +14,19 @@ class Extra(StrEnum):
 
 @dataclass
 class Ball(DataClassJsonMixin):
-    striker: int
-    non_striker: int
+    striker: int = -1
+    non_striker: int = -1
 
-    bowled_by: int
+    bowled_by: int = -1
 
-    batter_runs: int
+    batter_runs: int = 0
 
-    wicket_fell: bool
+    wicket_fell: bool = False
 
-    extra_type: Extra
-    extra_runs: int
+    extra_type: Extra = Extra.LEGAL_BALL
+    extra_runs: int = 0
 
-    penalty_runs: int
+    penalty_runs: int = 0
 
     striker_out: bool = False
     non_striker_out: bool = False
