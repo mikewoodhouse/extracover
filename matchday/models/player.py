@@ -3,10 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import date
 
+from dataclasses_json import Undefined, dataclass_json
+
 from app.config import config
 from matchday.common.db import sql
 
 
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class Player:
     name: str = ""
