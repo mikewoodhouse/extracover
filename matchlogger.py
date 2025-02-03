@@ -41,11 +41,8 @@ def inplay_view(match_id: int | None = None):
         if isinstance(stored_id, int):
             match_id = stored_id
     book: Book = repo.get(match_id) if match_id else Book()
-    print(book)
     manager = InplayManager(book)
-    print(manager)
     view = InplayView(manager)
-    print(view)
     view.show()
 
 
