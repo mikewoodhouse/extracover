@@ -13,6 +13,9 @@ Are separate pages necessary?
 Given a large screen, could all the needed views be presented in one page?
 """
 
+book_db = sqlite3.connect(books_db_path)
+book_db.row_factory = sqlite3.Row
+
 
 @ui.page("/")
 def navigation():
@@ -21,9 +24,8 @@ def navigation():
 
 
 @ui.page("/setup")
-def match_view(book_id: int | None = None):
-    conn = sqlite3.connect(books_db_path)
-    repo = BookRepository(conn)
+def setup_view(book_id: int | None = None):
+    repo = BookRepository(book_db)
     book: Book = repo.get(book_id) if book_id else Book()
     book_builder = BookBuilder(book=book, repo=repo)
     app.storage.user.pop("book_id")
@@ -31,13 +33,19 @@ def match_view(book_id: int | None = None):
     view.show()
 
 
-@ui.page("/match")
-def inplay_view(match_id: int | None):
-    conn = sqlite3.connect(books_db_path)
-    repo = BookRepository(conn)
+@ui.page("/match/{match_id}")
+def inplay_view(match_id: int | None = None):
+    repo = BookRepository(book_db)
+    if not match_id:
+        stored_id = app.storage.user.get("book_id")
+        if isinstance(stored_id, int):
+            match_id = stored_id
     book: Book = repo.get(match_id) if match_id else Book()
+    print(book)
     manager = InplayManager(book)
+    print(manager)
     view = InplayView(manager)
+    print(view)
     view.show()
 
 

@@ -33,6 +33,8 @@ class BookRepository:
         )
         row = csr.fetchone()
         if row:
-            return Book.from_json(row["content"])
+            book = Book.from_json(row["content"])
+            book.book_id = book_id
+            return book
 
         return Book()

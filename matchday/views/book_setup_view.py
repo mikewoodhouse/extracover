@@ -40,8 +40,9 @@ class BookSetupView:
 
     def show_player_selectors(self):
         with self.player_lineup_section:
-            with ui.card():
+            with ui.row():
                 ui.button("Start!", on_click=self.switch_to_inplay_view)
+                ui.label(f"Match id = {app.storage.user['book_id']}")
             with ui.row():
                 self.player_selector(1)
                 self.player_selector(2)

@@ -11,4 +11,4 @@ class InplayView:
         with ui.row():
             ui.page_title("Inplay")
             with ui.card():
-                ui.label("A load of balls")
+                ui.label("Ball Creator")
