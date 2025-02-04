@@ -21,3 +21,6 @@ class BookBuilder:
 
     def team_list(self) -> list[dict]:
         return Team.all_as_dicts()
+
+    def switch_teams(self) -> None:
+        self.book.team_1, self.book.team_2 = self.book.team_2, self.book.team_1

@@ -15,6 +15,23 @@ class BookSetupView:
         book_id = self.builder.add()
         app.storage.user["book_id"] = book_id
         self.team_list_section.set_visibility(False)
+        self.show_the_toss()
+
+    def show_the_toss(self) -> None:
+        self.the_toss.set_visibility(True)
+        with self.the_toss:
+            with ui.card():
+                ui.label("The Toss")
+                ui.label("Bat first:")
+                ui.button(self.builder.book.team_1.name, on_click=self.set_toss_winner_decision)
+                ui.button(self.builder.book.team_2.name, on_click=self.team_2_bats_first)
+
+    def team_2_bats_first(self) -> None:
+        self.builder.switch_teams()
+        self.set_toss_winner_decision()
+
+    def set_toss_winner_decision(self) -> None:
+        self.the_toss.set_visibility(False)
         self.show_player_selectors()
         self.player_lineup_section.set_visibility(True)
 
@@ -77,5 +94,7 @@ class BookSetupView:
                 self.team_selector("Team 2", "team_2")
             with ui.card():
                 ui.button("Create!", on_click=self.create_match)
+        self.the_toss = ui.column()
+        self.the_toss.set_visibility(False)
         self.player_lineup_section = ui.column()
         self.player_lineup_section.set_visibility(False)
