@@ -21,6 +21,17 @@ def string_to_parameter(txt: str) -> str:
     return re.sub(parameter_fix_pattern, r":\2", txt)
 
 
+def books_db() -> sqlite3.Connection:
+    conn = sqlite3.connect(books_db_path)
+    conn.row_factory = sqlite3.Row
+    res = conn.execute(
+        "SELECT Count(*) AS num_found FROM sqlite_schema WHERE type='table' AND tbl_name='books'"
+    ).fetchone()
+    if res["num_found"] == 0:
+        initialise_db(conn)
+    return conn
+
+
 def sql(file_name: str) -> str:
     path = Path(__file__).parent.parent / "models/sql" / f"{file_name}.sql"
     txt = path.open().read()

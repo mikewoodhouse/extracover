@@ -1,8 +1,6 @@
-import sqlite3
-
 from nicegui import app, ui
 
-from matchday.common.db import books_db_path
+from matchday.common.db import books_db
 from matchday.data import BookRepository
 from matchday.models import Book
 from matchday.viewmodels import BookBuilder, InplayManager
@@ -13,8 +11,7 @@ Are separate pages necessary?
 Given a large screen, could all the needed views be presented in one page?
 """
 
-book_db = sqlite3.connect(books_db_path)
-book_db.row_factory = sqlite3.Row
+db = books_db()
 
 
 @ui.page("/")
@@ -25,7 +22,7 @@ def navigation():
 
 @ui.page("/setup")
 def setup_view(book_id: int | None = None):
-    repo = BookRepository(book_db)
+    repo = BookRepository(db)
     book: Book = repo.get(book_id) if book_id else Book()
     book_builder = BookBuilder(book=book, repo=repo)
     app.storage.user.pop("book_id")
@@ -35,7 +32,7 @@ def setup_view(book_id: int | None = None):
 
 @ui.page("/match/{match_id}")
 def inplay_view(match_id: int | None = None):
-    repo = BookRepository(book_db)
+    repo = BookRepository(db)
     if not match_id:
         stored_id = app.storage.user.get("book_id")
         if isinstance(stored_id, int):
