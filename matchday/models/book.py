@@ -34,7 +34,7 @@ class Book(DataClassJsonMixin):
         return self.current_innings.bowling
 
     def update(self, ball: Ball) -> None:
-        pass
+        self.current_innings.update(ball)
 
     @property
     def score(self) -> str:
