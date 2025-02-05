@@ -14,15 +14,16 @@ class BallCreator:
 
     def apply_ball(self) -> None:
         self.manager.apply(self.ball)
+        if self.ball.changes_ends:
+            self.switch_batters()
+        self.ball.reset()
 
-    def switch_batters(self, left: ui.select, right: ui.select) -> None:
-        l_value, r_value = left.value, right.value
-        print(f"switching {l_value=} , {r_value=}")
-        left.value = r_value
-        right.value = l_value
+    def switch_batters(self) -> None:
+        self.ball.striker, self.ball.non_striker = self.ball.non_striker, self.ball.striker
 
     def notify_end_of_over(self) -> None:
         self.manager.notify_end_of_over()
+        self.switch_batters()
 
     def notify_end_of_innings(self) -> None:
         self.manager.notify_end_of_innings()
@@ -33,7 +34,7 @@ class BallCreator:
             with ui.card():
                 with ui.row():
                     ui.label("Bowling")
-                    striker = (
+                    (
                         ui.select(self.manager.bowlers)
                         .style("width: 150px;")
                         .props("borderless filled")
@@ -41,19 +42,19 @@ class BallCreator:
                     )
                 with ui.row():
                     ui.label("Facing:").style("valign: bottom")
-                    striker = (
+                    (
                         ui.select(self.manager.batters)
                         .style("width: 150px;")
                         .props("borderless filled")
                         .bind_value(self.ball, "striker")
                     )
-                    non_striker = (
+                    (
                         ui.select(self.manager.batters)
                         .style("width: 150px;")
                         .props("borderless filled")
                         .bind_value(self.ball, "non_striker")
                     )
-                    ui.button("Switch", on_click=lambda: self.switch_batters(striker, non_striker))
+                    ui.button("Switch", on_click=self.switch_batters)
             with ui.card():
                 with ui.row():
                     ui.label("Runs")

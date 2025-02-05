@@ -29,6 +29,24 @@ class Ball(DataClassJsonMixin):
     striker_out: bool = False
     non_striker_out: bool = False
 
+    def reset(self) -> None:
+        self.extra_type = Extra.NO_EXTRA
+        self.batter_runs = self.extra_runs = self.penalty_runs = 0
+        self.striker_out = self.non_striker_out = False
+
+    @property
+    def changes_ends(self) -> bool:
+        if self.extra_type == Extra.NO_EXTRA:
+            return self.batter_runs % 2 == 1
+        if self.extra_type == Extra.BYE or self.extra_type == Extra.LEGBYE:
+            return self.extra_runs % 2 == 1
+        if self.extra_type == Extra.NOBALL:
+            return self.batter_runs % 2 == 1 or (self.extra_runs - 1) % 2 == 1
+        if self.extra_type == Extra.WIDE:
+            # doesn't handle all cases, like all-run four off a wide, or boundary?
+            return (self.extra_runs - 1) % 2 == 1
+        return False
+
     @property
     def is_legal(self) -> bool:
         return self.extra_type not in [Extra.WIDE, Extra.NOBALL]
