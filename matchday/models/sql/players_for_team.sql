@@ -24,8 +24,8 @@ SELECT
     lm.name
   , lm.player_id
   , lm.last_match
-  , MIN(b.over * 6 + b.ball_seq) AS first_ball_recd
-  , MIN(b.over * 6 + w.ball_seq) AS first_ball_bowled
+  , IFNULL (MIN(b.over * 6 + b.ball_seq), 60) AS first_ball_recd
+  , IFNULL (MIN(b.over * 6 + w.ball_seq), 60) AS first_ball_bowled
 FROM
     last_match lm
     LEFT JOIN balls b ON b.match_id = lm.last_match_id
@@ -40,4 +40,4 @@ GROUP BY
   , lm.last_match
 ORDER BY
     lm.last_match DESC
-  , lm.name
+  , lm.name;
