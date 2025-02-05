@@ -30,3 +30,7 @@ class Team:
     @property
     def batters(self) -> dict[int, str]:
         return {p.player_id: p.name for p in self.players if not p.is_out}
+
+    @property
+    def bowlers(self) -> dict[int, str]:
+        return {p.player_id: p.name for p in self.players if not p.bowled_out}

@@ -18,5 +18,9 @@ class Book(DataClassJsonMixin):
     def batting(self) -> Team:
         return self.team_1
 
+    @property
+    def bowling(self) -> Team:
+        return self.team_2
+
     def update(self, ball: Ball) -> None:
         pass
