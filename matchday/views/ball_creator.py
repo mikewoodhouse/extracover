@@ -21,6 +21,12 @@ class BallCreator:
         left.value = r_value
         right.value = l_value
 
+    def notify_end_of_over(self) -> None:
+        self.manager.notify_end_of_over()
+
+    def notify_end_of_innings(self) -> None:
+        self.manager.notify_end_of_innings()
+
     def show(self):
         with ui.card():
             ui.label("Ball Creator").style("color: cyan")
@@ -80,5 +86,7 @@ class BallCreator:
                     ui.button("Apply!", on_click=self.apply_ball).style("height: 70px; font-size: 200%;").props(
                         "color=red"
                     )
+                    ui.button("End over", on_click=self.notify_end_of_over)
+                    ui.button("End innings", on_click=self.notify_end_of_innings)
         with ui.card():
             ui.textarea().bind_value_from(self.ball, "as_string").style("width: 50em")

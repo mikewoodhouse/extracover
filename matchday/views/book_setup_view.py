@@ -1,18 +1,21 @@
 from nicegui import app, ui
 
+from matchday.models import Team
 from matchday.viewmodels import BookBuilder
 
 
 class BookSetupView:
     def __init__(self, builder: BookBuilder) -> None:
         self.builder = builder
+        self.team_1: str = ""
+        self.team_2: str = ""
 
     def update_team_name(self, field_name: str, label: ui.label, value: str):
-        self.builder.set_team_name(field_name, value)
+        setattr(self, field_name, value)
         label.set_text(value)
 
     def create_match(self) -> None:
-        book_id = self.builder.add()
+        book_id = self.builder.add(self.team_1, self.team_2)
         app.storage.user["book_id"] = book_id
         self.team_list_section.set_visibility(False)
         self.show_the_toss()
@@ -23,8 +26,8 @@ class BookSetupView:
             with ui.card():
                 ui.label("The Toss")
                 ui.label("Bat first:")
-                ui.button(self.builder.book.team_1.name, on_click=self.set_toss_winner_decision)
-                ui.button(self.builder.book.team_2.name, on_click=self.team_2_bats_first)
+                ui.button(self.builder.book.team_1, on_click=self.set_toss_winner_decision)
+                ui.button(self.builder.book.team_2, on_click=self.team_2_bats_first)
 
     def team_2_bats_first(self) -> None:
         self.builder.switch_teams()
@@ -61,15 +64,14 @@ class BookSetupView:
                 ui.button("Start!", on_click=self.switch_to_inplay_view)
                 ui.label(f"Match id = {app.storage.user['book_id']}")
             with ui.row():
-                self.player_selector(1)
-                self.player_selector(2)
+                self.player_selector(self.builder.book.inns_1.batting)
+                self.player_selector(self.builder.book.inns_1.bowling)
 
     def switch_to_inplay_view(self):
         self.builder.save()
 
-    def player_selector(self, team_number: int) -> None:
-        team = self.builder.book.team_1 if team_number == 1 else self.builder.book.team_2
-        player_dicts = team.players_as_dicts()  # TODO : should come from builder?
+    def player_selector(self, team: Team) -> None:
+        player_dicts = team.players_as_dicts()
         with ui.card():
             ui.label(team.name).style("font-size: 200%")
             with ui.table(

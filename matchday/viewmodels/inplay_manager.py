@@ -11,16 +11,13 @@ class InplayManager:
 
     @property
     def title(self) -> str:
-        return f"{self.book.team_1.name} vs {self.book.team_2.name}"
+        return f"{self.book.team_1} vs {self.book.team_2}"
 
     def apply(self, ball: Ball) -> None:
         print("applying", ball)
         self.book.update(ball)
         self.balls.append(ball)
         self.ball_num += 1 if ball.is_legal else 0
-        if self.ball_num > 6:
-            self.over_num += 1
-            self.ball_num -= 6
         desc = (
             f"{self.over_num}.{self.ball_num}: "
             f"{self.bowlers[ball.bowler]} to {self.batters[ball.striker]}:"
@@ -28,6 +25,13 @@ class InplayManager:
         )
         self.history.append(desc)
         print(self.history)
+
+    def notify_end_of_over(self) -> None:
+        self.over_num += 1
+        self.ball_num = 0
+
+    def notify_end_of_innings(self) -> None:
+        self.book.innings_closed()
 
     @property
     def batters(self) -> dict[int, str]:

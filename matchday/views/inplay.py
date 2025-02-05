@@ -20,4 +20,4 @@ class InplayView:
                     ui.label("History").style("color: cyan; width: 50em")
                     ui.textarea().bind_value_from(self.manager, "last_6")
             with ui.column():
-                ScoreView().show()
+                ScoreView(self.manager.book).show()
