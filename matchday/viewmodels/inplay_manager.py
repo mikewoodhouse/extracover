@@ -38,5 +38,5 @@ class InplayManager:
         return self.book.bowling.bowlers
 
     @property
-    def last_6(self) -> list[str]:
+    def last_6(self) -> str:
         return "\n".join(self.history[:-6:-1])
