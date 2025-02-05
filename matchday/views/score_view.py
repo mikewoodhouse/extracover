@@ -10,4 +10,4 @@ class ScoreView:
     def show(self) -> None:
         with ui.card():
             ui.label("Scorebook").style("color: cyan")
-            ui.label().bind_text_from(self.book, "score").style("font-size: 200%")
+            ui.textarea().bind_value_from(self.book, "score").style("font-size: 150%")

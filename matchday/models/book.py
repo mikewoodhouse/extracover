@@ -38,4 +38,9 @@ class Book(DataClassJsonMixin):
 
     @property
     def score(self) -> str:
-        return "0-0"
+        def inns_score(name: str, inns: Innings) -> str:
+            return f"{name}: {inns.total} - {inns.wickets}"
+
+        return inns_score(self.team_1, self.inns_1) + (
+            "" if self.current_innings == self.inns_1 else "\n" + inns_score(self.team_2, self.inns_2)
+        )
