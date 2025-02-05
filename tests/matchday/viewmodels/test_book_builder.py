@@ -24,8 +24,7 @@ def memory_repo() -> BookRepository:
 def builder():
     repo = memory_repo()
     bc = BookBuilder(book=Book(), repo=repo)
-    bc.set_team_name("team_1", "Banana")
-    bc.set_team_name("team_2", "Grapefruit")
+    bc.add("Banana", "Grapefruit")
     return bc
 
 
@@ -34,19 +33,19 @@ def test_can_construct(builder: BookBuilder):
 
 
 def test_setting_team_names(builder: BookBuilder):
-    assert builder.book.team_1.name == "Banana"
-    assert builder.book.team_2.name == "Grapefruit"
+    assert builder.book.team_1 == "Banana"
+    assert builder.book.team_2 == "Grapefruit"
 
 
 def test_saving_via_repo(builder: BookBuilder):
-    book_id = builder.add()
+    book_id = builder.add("Banana", "Grapefruit")
     assert isinstance(book_id, int)
     assert book_id >= 1
 
 
 def test_inserting(builder: BookBuilder):
     builder.repo = memory_repo()
-    book_id = builder.add()
+    book_id = builder.add("Banana", "Grapefruit")
     assert book_id > 0
     book = builder.repo.get(book_id)
-    assert book.team_1.name == builder.book.team_1.name
+    assert book.team_1 == builder.book.team_1

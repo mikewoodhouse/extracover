@@ -4,7 +4,7 @@ import pytest
 
 from matchday.common.db import initialise_db
 from matchday.data import BookRepository
-from matchday.models import Book, Team
+from matchday.models import Book
 
 
 @pytest.fixture
@@ -28,7 +28,7 @@ def test_add(repo: BookRepository):
 
 
 def test_get(repo: BookRepository):
-    book = Book(team_1=Team(name="Banana"))
+    book = Book(team_1="Banana", team_2="Apple")
     book_id = repo.add(book)
     output = repo.get(book_id)
     assert isinstance(output, Book)
@@ -36,10 +36,10 @@ def test_get(repo: BookRepository):
 
 
 def test_save(repo: BookRepository):
-    book = Book(team_1=Team(name="Banana"))
+    book = Book(team_1="Banana", team_2="")
     book_id = repo.add(book)
     book.book_id = book_id
-    orange = Team(name="Orange")
+    orange = "Orange"
     book.team_2 = orange
     repo.save(book)
     from_db = repo.get(book_id)
