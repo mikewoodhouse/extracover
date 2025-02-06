@@ -12,6 +12,16 @@ class Extra(StrEnum):
     LEGBYE = "lb"
 
 
+class HowOut(StrEnum):
+    NOTOUT = "no"
+    BOWLED = "b"
+    CAUGHT = "c"
+    LBW = "lbw"
+    STUMPED = "st"
+    RUN_OUT = "ro"
+    OTHER = "other"
+
+
 @dataclass
 class Ball(DataClassJsonMixin):
     striker: int = -1
@@ -28,11 +38,20 @@ class Ball(DataClassJsonMixin):
 
     striker_out: bool = False
     non_striker_out: bool = False
+    how_out: HowOut = HowOut.NOTOUT
 
     def reset(self) -> None:
         self.extra_type = Extra.NO_EXTRA
         self.batter_runs = self.extra_runs = self.penalty_runs = 0
         self.striker_out = self.non_striker_out = False
+
+    @property
+    def bowler_runs_conceded(self) -> int:
+        return self.batter_runs + self.extra_runs if self.extra_type in [Extra.WIDE, Extra.NOBALL] else 0
+
+    @property
+    def wicket_credited_to_bowler(self) -> bool:
+        return self.how_out in [HowOut.BOWLED, HowOut.CAUGHT, HowOut.LBW, HowOut.STUMPED]
 
     @property
     def changes_ends(self) -> bool:

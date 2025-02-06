@@ -15,3 +15,5 @@ class Innings:
         self.total += ball.batter_runs + ball.extra_runs + ball.penalty_runs
         if ball.wicket_fell:
             self.wickets += 1
+        self.batting.update_batting(ball)
+        self.bowling.update_bowling(ball)
