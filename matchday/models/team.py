@@ -23,7 +23,10 @@ class Team:
         non_striker.update_as_non_striker(ball)
 
     def update_bowling(self, ball: Ball) -> None:
-        self.players[ball.bowler].update_as_bowler(ball)
+        bowler = self.players[ball.bowler]
+        if bowler.bowl_position == 0:
+            bowler.bowl_position = 1 + max(p.bowl_position for p in self.players.values())
+        bowler.update_as_bowler(ball)
 
     @classmethod
     def all_as_dicts(cls) -> list[dict]:

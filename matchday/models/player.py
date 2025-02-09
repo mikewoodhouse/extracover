@@ -25,6 +25,7 @@ class Player:
     runs_conceded: int = 0
     wickets: int = 0
 
+    bowl_position: int = 0
     balls_bowled: int = 0
 
     is_out: bool = False
