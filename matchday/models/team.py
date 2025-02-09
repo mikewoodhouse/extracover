@@ -13,8 +13,14 @@ class Team:
     players: dict[int, Player] = field(default_factory=dict)
 
     def update_batting(self, ball: Ball) -> None:
-        self.players[ball.striker].update_as_striker(ball)
-        self.players[ball.non_striker].update_as_non_striker(ball)
+        striker = self.players[ball.striker]
+        non_striker = self.players[ball.non_striker]
+        if striker.bat_position == 0:
+            striker.bat_position = 1 + max(p.bat_position for p in self.players.values())
+        if non_striker.bat_position == 0:
+            non_striker.bat_position = 1 + max(p.bat_position for p in self.players.values())
+        striker.update_as_striker(ball)
+        non_striker.update_as_non_striker(ball)
 
     def update_bowling(self, ball: Ball) -> None:
         self.players[ball.bowler].update_as_bowler(ball)

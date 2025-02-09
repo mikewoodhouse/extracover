@@ -19,6 +19,7 @@ class Player:
     first_ball_recd: int = 0
     first_ball_bowled: int = 0
 
+    bat_position: int = 0
     runs_scored: int = 0
 
     runs_conceded: int = 0
