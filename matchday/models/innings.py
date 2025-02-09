@@ -17,3 +17,11 @@ class Innings:
             self.wickets += 1
         self.batting.update_batting(ball)
         self.bowling.update_bowling(ball)
+
+    @property
+    def batting_card(self) -> list[dict]:
+        return [{"name": p.name, "runs": p.runs_scored} for p in self.batting.players.values()]
+
+    @property
+    def bowling_card(self) -> list[dict]:
+        return [{"name": p.name, "runs": p.runs_scored, "wickets": p.wickets} for p in self.bowling.players.values()]
