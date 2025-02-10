@@ -43,11 +43,12 @@ class Ball(DataClassJsonMixin):
     def reset(self) -> None:
         self.extra_type = Extra.NO_EXTRA
         self.batter_runs = self.extra_runs = self.penalty_runs = 0
-        self.striker_out = self.non_striker_out = False
+        self.striker_out = False
+        self.non_striker_out = False
 
     @property
     def bowler_runs_conceded(self) -> int:
-        return self.batter_runs + self.extra_runs if self.extra_type in [Extra.WIDE, Extra.NOBALL] else 0
+        return self.batter_runs + (self.extra_runs if self.extra_type in [Extra.WIDE, Extra.NOBALL] else 0)
 
     @property
     def wicket_credited_to_bowler(self) -> bool:

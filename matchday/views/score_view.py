@@ -17,3 +17,9 @@ class ScoreView:
                 ui.html().bind_content_from(
                     self.book.current_innings, f"batter_{i + 1}", backward=lambda p: p().batting_line.html
                 )
+
+        with ui.card().tight():
+            for i, _ in enumerate(self.book.current_innings.bowling.players):
+                ui.html().bind_content_from(
+                    self.book.current_innings, f"bowler_{i + 1}", backward=lambda p: p().bowling_line.html
+                )

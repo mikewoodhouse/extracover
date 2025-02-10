@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 
 from app.config import config
 from matchday.models.ball import Ball
-from matchday.models.player import BattingLine, Player
+from matchday.models.player import BattingLine, BowlingLine, Player
 
 
 @dataclass
@@ -23,10 +23,20 @@ class Team:
         non_striker.update_as_non_striker(ball)
 
     def update_bowling(self, ball: Ball) -> None:
+        for p in self.players.values():
+            p.is_bowler = False
         bowler = self.players[ball.bowler]
+        bowler.is_bowler = True
         if bowler.bowl_position == 0:
             bowler.bowl_position = 1 + max(p.bowl_position for p in self.players.values())
         bowler.update_as_bowler(ball)
+
+    def switch_batters(self) -> None:
+        striker = next(p for p in self.players.values() if p.is_striker)
+        non_striker = next(p for p in self.players.values() if p.bat_position > 0 and not p.is_out and not p.is_striker)
+        print("switching", striker.name, "and", non_striker.name)
+        striker.is_striker = False
+        non_striker.is_striker = True
 
     @classmethod
     def all_as_dicts(cls) -> list[dict]:
@@ -57,6 +67,5 @@ class Team:
         return sorted([p.batting_line for p in self.players.values()], key=lambda d: d.position)
 
     @property
-    def bowling_lines(self) -> list[dict]:
-        player_list: list[dict] = [p.bowling_line for p in self.players.values() if p.balls_bowled > 0]
-        return sorted(player_list, key=lambda d: d["position"])
+    def bowling_lines(self) -> list[BowlingLine]:
+        return sorted([p.bowling_line for p in self.players.values()], key=lambda d: d.position)

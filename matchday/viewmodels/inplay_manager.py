@@ -29,6 +29,7 @@ class InplayManager:
     def notify_end_of_over(self) -> None:
         self.over_num += 1
         self.ball_num = 0
+        self.book.current_innings.batting.switch_batters()
 
     def notify_end_of_innings(self) -> None:
         self.book.innings_closed()

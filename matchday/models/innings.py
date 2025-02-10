@@ -37,6 +37,9 @@ class Innings:
 
     def make_bowler_lookup_func(self, index: int):
         def bowler_lookup() -> Player:
-            return next(p for p in self.bowling.players.values() if p.bowl_position == index)
+            for p in self.bowling.players.values():
+                if p.bowl_position == index:
+                    return p
+            return Player()
 
         return bowler_lookup

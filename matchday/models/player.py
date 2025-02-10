@@ -10,6 +10,10 @@ from matchday.common.db import sql
 from matchday.models.ball import Ball
 
 
+def embolden(s: str, yn: bool) -> str:
+    return f"<b>{s}</b>" if yn else s
+
+
 @dataclass
 class BattingLine:
     position: int
@@ -20,16 +24,44 @@ class BattingLine:
     striker: bool
 
     @property
+    def non_striker(self) -> bool:
+        return not self.striker and self.position > 0 and not self.out
+
+    @property
     def html(self) -> str:
         return (
             (
-                f"""<div style='display: flex; justify-content: space-between; width: 180px;'>"""
-                f"""<div>{"*" if self.striker else ""}{"<b>" if self.striker or (not self.striker and not self.out) else ""}{self.name}</b></div>"""
+                f"""<div style='display: flex; justify-content: space-between; width: 240px;'>"""
+                f"""<div>{"*" if self.striker else ""}{embolden(self.name, self.striker or self.non_striker)}</div>"""
                 f"""<div>{self.runs} ({self.balls})</div>"""
             )
             if self.position > 0
             else ""
         )
+
+
+@dataclass
+class BowlingLine:
+    position: int
+    name: str
+    balls: int
+    runs: int
+    wickets: int
+    is_bowler: bool
+
+    @property
+    def html(self) -> str:
+        return (
+            f"""<div style='display: flex; justify-content: space-between; width: 240px;'>"""
+            f"""<div>{"<b>" if self.is_bowler else ""}{self.name}</b></div>"""
+            f"""<div>{self.wickets}-{self.runs} ({self.balls}, {self.econ:4.1f})</div>"""
+        )
+
+    @property
+    def econ(self) -> float:
+        if self.balls == 0:
+            return 0.0
+        return self.runs * 6.0 / self.balls
 
 
 @dataclass_json(undefined=Undefined.EXCLUDE)
@@ -51,6 +83,7 @@ class Player:
 
     bowl_position: int = 0
     balls_bowled: int = 0
+    is_bowler: bool = False
 
     is_out: bool = False
     bowled_out: bool = False
@@ -91,12 +124,13 @@ class Player:
             self.is_striker,
         )
 
-    @property  #
-    def bowling_line(self) -> dict:
-        return {
-            "position": self.bowl_position if self.bowl_position > 0 else 99,
-            "name": self.name,
-            "runs": self.runs_conceded,
-            "wickets": self.wickets,
-            "balls": self.balls_bowled,
-        }
+    @property
+    def bowling_line(self) -> BowlingLine:
+        return BowlingLine(
+            position=self.bowl_position if self.bowl_position > 0 else -1,
+            name=self.name,
+            runs=self.runs_conceded,
+            wickets=self.wickets,
+            balls=self.balls_bowled,
+            is_bowler=self.is_bowler,
+        )
