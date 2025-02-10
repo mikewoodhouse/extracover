@@ -1,8 +1,9 @@
 import pytest
 
 from app.model import Ball, Scorebook
+
 # sourcery skip: dont-import-test-modules
-from tests.model.fakes import fake_book
+from .fakes import fake_book
 
 
 @pytest.fixture
@@ -28,9 +29,7 @@ def test_creation(book: Scorebook):
         (Ball(wicket_fell=True), 0, 1, 1),
     ],
 )
-def test_first_ball_first_innings(
-    book: Scorebook, ball, expected_total, expected_balls_bowled, wickets_down
-):
+def test_first_ball_first_innings(book: Scorebook, ball, expected_total, expected_balls_bowled, wickets_down):
     book.update(ball)
     assert book.current_innings.total == expected_total
     assert book.current_innings.balls_bowled == expected_balls_bowled
@@ -59,9 +58,7 @@ def test_closing_first_innings(book: Scorebook, ball: Ball, bowled: int, wickets
         (Ball(batter_runs=1), 1, 0, 0, 1),
     ],
 )
-def test_batters_update_correctly(
-    book: Scorebook, ball, striker, non_striker, striker_runs, non_striker_runs
-):
+def test_batters_update_correctly(book: Scorebook, ball, striker, non_striker, striker_runs, non_striker_runs):
     book.update(ball)
     inns = book.current_innings
     assert inns.striker_index == striker

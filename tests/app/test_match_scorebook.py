@@ -112,9 +112,7 @@ def test_run_entire_match_ball_set_from_db():
     assert book.first_innings.total - book.second_innings.total == 29
     assert book.first_innings.wickets == 5
     assert book.second_innings.wickets == 8
-    inns_1_scores = {
-        batter.name: batter.runs_scored for batter in book.first_innings.batters
-    }
+    inns_1_scores = {batter.name: batter.runs_scored for batter in book.first_innings.batters}
     assert inns_1_scores["RG Sharma"] == 49
     assert inns_1_scores["Ishan Kishan"] == 42
     assert inns_1_scores["SA Yadav"] == 0

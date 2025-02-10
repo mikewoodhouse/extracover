@@ -15,7 +15,7 @@ from app.utils import row_count
 def writer() -> MatchWriter:
     db = sqlite3.connect(":memory:")
     db.row_factory = sqlite3.Row
-    sql = Path(__file__).parent.parent.parent / "schema.sql"
+    sql = Path(__file__).parent.parent.parent.parent / "schema.sql"
     with closing(db.cursor()) as csr:
         csr.executescript(sql.read_text())
     return MatchWriter(db)
