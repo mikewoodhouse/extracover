@@ -24,6 +24,8 @@ def test_first_two_batters_positions_updated():
     assert bert.bat_position == 1
     assert chas.bat_position == 2
 
+    assert len(tm.batters) == len(players)
+
 
 def test_first_bowler_position_updated():
     arthur = Player(name="Arthur", player_id=1)

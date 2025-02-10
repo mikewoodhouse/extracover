@@ -11,11 +11,9 @@ class ScoreView:
         with ui.card():
             ui.label("Scorebook").style("color: cyan")
             ui.textarea().bind_value_from(self.book, "score").style("font-size: 150%")
+
         with ui.card().tight():
-            ui.table(
-                rows=self.book.current_innings.batting_card,
-            ).props("dense")
-        with ui.card().tight():
-            ui.table(
-                rows=self.book.current_innings.bowling_card,
-            ).props("dense")
+            for i, _ in enumerate(self.book.current_innings.batting.players):
+                ui.html().bind_content_from(
+                    self.book.current_innings, f"batter_{i + 1}", backward=lambda p: p().batting_line.html
+                )

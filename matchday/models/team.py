@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 
 from app.config import config
 from matchday.models.ball import Ball
-from matchday.models.player import Player
+from matchday.models.player import BattingLine, Player
 
 
 @dataclass
@@ -51,3 +51,12 @@ class Team:
     @property
     def bowlers(self) -> dict[int, str]:
         return {p.player_id: p.name for p in self.players.values() if not p.bowled_out}
+
+    @property
+    def batting_lines(self) -> list[BattingLine]:
+        return sorted([p.batting_line for p in self.players.values()], key=lambda d: d.position)
+
+    @property
+    def bowling_lines(self) -> list[dict]:
+        player_list: list[dict] = [p.bowling_line for p in self.players.values() if p.balls_bowled > 0]
+        return sorted(player_list, key=lambda d: d["position"])
