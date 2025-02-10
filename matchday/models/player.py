@@ -52,9 +52,13 @@ class BowlingLine:
     @property
     def html(self) -> str:
         return (
-            f"""<div style='display: flex; justify-content: space-between; width: 240px;'>"""
-            f"""<div>{"<b>" if self.is_bowler else ""}{self.name}</b></div>"""
-            f"""<div>{self.wickets}-{self.runs} ({self.balls}, {self.econ:4.1f})</div>"""
+            (
+                f"""<div style='display: flex; justify-content: space-between; width: 240px;'>"""
+                f"""<div>{embolden(self.name, self.is_bowler)}</div>"""
+                f"""<div>{self.wickets}-{self.runs} ({self.balls}, {self.econ:4.1f})</div>"""
+            )
+            if self.position > 0
+            else ""
         )
 
     @property
