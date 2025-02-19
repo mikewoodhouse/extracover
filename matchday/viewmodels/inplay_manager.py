@@ -24,7 +24,6 @@ class InplayManager:
             f"{'' if ball.is_legal else ball.extra_type} {ball.batter_runs} + {ball.extra_runs}"
         )
         self.history.append(desc)
-        print(self.history)
 
     def notify_end_of_over(self) -> None:
         self.over_num += 1

@@ -23,6 +23,7 @@ class Book(DataClassJsonMixin):
         self.current_innings = self.inns_1
 
     def innings_closed(self) -> None:
+        self.inns_1.closed = True
         self.current_innings = self.inns_2
 
     @property
@@ -41,6 +42,8 @@ class Book(DataClassJsonMixin):
         def inns_score(name: str, inns: Innings) -> str:
             return f"{name}: {inns.total} - {inns.wickets}"
 
-        return inns_score(self.team_1, self.inns_1) + (
-            "" if self.current_innings == self.inns_1 else "\n" + inns_score(self.team_2, self.inns_2)
+        return (
+            inns_score(self.team_1, self.inns_1)
+            + (inns_score(self.team_2, self.inns_2) if self.inns_1.closed else "")
+            + f"\n{self.current_innings.fours} fours, {self.current_innings.sixes} sixes"
         )

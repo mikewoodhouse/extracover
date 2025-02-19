@@ -10,7 +10,8 @@ class ScoreView:
     def show(self) -> None:
         with ui.card():
             ui.label("Scorebook").style("color: cyan")
-            ui.textarea().bind_value_from(self.book, "score").style("font-size: 150%")
+            ui.html().bind_content_from(self.book.current_innings, "score").style("font-size: 150%")
+            ui.html().bind_content_from(self.book.current_innings, "boundaries")
 
         with ui.card().tight():
             for i, _ in enumerate(self.book.current_innings.batting.players):

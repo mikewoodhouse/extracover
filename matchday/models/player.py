@@ -31,7 +31,7 @@ class BattingLine:
     def html(self) -> str:
         return (
             (
-                f"""<div style='display: flex; justify-content: space-between; width: 240px;'>"""
+                f"""<div style='display: flex; justify-content: space-between; width: 300px;'>"""
                 f"""<div>{"*" if self.striker else ""}{embolden(self.name, self.striker or self.non_striker)}</div>"""
                 f"""<div>{self.runs} ({self.balls})</div>"""
             )
@@ -53,7 +53,7 @@ class BowlingLine:
     def html(self) -> str:
         return (
             (
-                f"""<div style='display: flex; justify-content: space-between; width: 240px;'>"""
+                f"""<div style='display: flex; justify-content: space-between; width: 300px;'>"""
                 f"""<div>{embolden(self.name, self.is_bowler)}</div>"""
                 f"""<div>{self.wickets}-{self.runs} ({self.balls}, {self.econ:4.1f})</div>"""
             )
