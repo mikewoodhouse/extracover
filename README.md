@@ -10,14 +10,20 @@ Check that the UI runs - at present `fastapi 0.115.7` causes a problem, so downg
 
 To investigate the evolution of cricket innings in (initially) T20 matches and to explore the extent to which predictions may be made by applying relevant factors as a series of "overlay" factors based on historic data before the start of the game abd whether in-game factors such as pitch conditions, weather etc can be derived and applied to increase accuracy as the innings develops.
 
+The code here is, at present, a series of explorations of various idea, which at least to some extent goes to explain why there can be multiple, suspiciously similar chunks of code lying around (I'm looking at you, scorebook, for example). A period of contemplation should result in a new, coherently-structured codebase. When I have the strength.
+
 ## Data
 
-https://cricsheet.org/
-https://cricsheet.org/register/people.csv
-https://cricsheet.org/register/names.csv
+At [Cricsheet](https://cricsheet.org/):
+
+Matches: https://cricsheet.org/matches/
+
+People: https://cricsheet.org/register/people.csv
+
+Names: https://cricsheet.org/register/names.csv
 
 
-## Data TODOs
+## Data TODOs (or "to consider")
 
 * Classify players:
   * bowl style
@@ -61,7 +67,7 @@ Train on ball outcomes (one hot?):
 
 Wides & noballs by phase:
 
-| phase | wides | noballs |   total | total (legit) | wide % |   no % |
+| phase | wides | noballs |   total | total (legit) | wide % |   nb % |
 | :---: | ----: | ------: | ------: | ------------: | -----: | -----: |
 |   0   | 19997 |    2319 |  563215 |        540899 |  3.70% | 0.439% |
 |   1   | 29972 |    3852 | 1051477 |       1017653 |  2.95% | 0.379% |
