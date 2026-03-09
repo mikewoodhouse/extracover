@@ -126,7 +126,7 @@ class Clusterer:
     def find_knee(self, inns, over) -> int:
         X = self.prepare_training_set(inns, over, "normalizer")
         clusters_range = range(11, 31, 1)
-        sse = [self.test_n(n, X) for n in clusters_range]
+        sse: list[float] = [self.test_n(n, X) for n in clusters_range]
         kneedle = KneeLocator(clusters_range, sse, curve="convex", direction="decreasing")
         if isinstance(kneedle.knee, (int, np.signedinteger)):
             logger.info(f"Knee {inns=} {over=} found at {kneedle.knee}")
