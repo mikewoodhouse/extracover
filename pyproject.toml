@@ -1,13 +1,9 @@
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-mock_use_standalone_module = true
-
 [project]
 name = "extracover"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
     "bayesian-optimization>=2.0.3",
     "black>=24.10.0",
@@ -50,3 +46,7 @@ dependencies = [
     "tqdm>=4.67.1",
     "types-requests>=2.32.0.20241016",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+mock_use_standalone_module = true

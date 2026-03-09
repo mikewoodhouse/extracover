@@ -173,7 +173,7 @@ class Clusterer:
                 fitted_scaler = scaler_obj.fit(X)
                 Xp = fitted_scaler.transform(X)
 
-                tsne = TSNE(n_components=2, metric="euclidean", verbose=0, perplexity=40, n_iter=300)
+                tsne = TSNE(n_components=2, metric="euclidean", verbose=0, perplexity=40, max_iter=300)
                 results = tsne.fit_transform(Xp)
 
                 n_clusters = self.knees[inns][over]
